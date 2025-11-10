@@ -1,9 +1,19 @@
 #!/bin/bash
+system_banner="Lowbit Cash"
+system_basename="$(basename $0)"
 
 function system_help() {
-  echo "Help!!!"
+  echo "${system_banner} - Usage:"
+  echo "  ${system_basename} COMMAND ARGS"
+  echo
+  echo "Commands:"
+  echo "  account"
+  echo "  help (this message)"
+  echo "  version"
+  echo
+  exit 0
 }
 
 function system_version() {
-  echo "Version: unknown, sorry"
+  echo "${system_banner} - Version: unknown, sorry"
 }

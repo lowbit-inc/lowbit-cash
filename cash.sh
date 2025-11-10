@@ -7,16 +7,19 @@
 ########
 # Libs #
 ########
+source ./libs/account.sh
+source ./libs/database.sh
 source ./libs/system.sh
+source ./libs/validate.sh
 
 ##########
 # Script #
 ##########
 
-usr_args="$@"
-
 case "$1" in
   "account")
+    shift
+    accountMain "$@"
     ;;
   "envelope")
     ;;
@@ -27,5 +30,8 @@ case "$1" in
     ;;
   "version")
     system_version
+    ;;
+  *)
+    system_help
     ;;
 esac

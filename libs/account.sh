@@ -1,0 +1,44 @@
+#!/bin/bash
+
+account_type_list="bank investment"
+
+function accountAdd() {
+  if [[ $4 ]]; then
+    validate_string       "$1" && this_account_name="$1"
+    validate_string       "$2" && this_account_place="$2"
+    validate_account_type "$3" && this_account_type="$3"
+    validate_money        "$4" && this_account_initial_balance="$4"
+  else
+    echo "Error: missing required args"
+    exit 1
+  fi
+
+  database_run "INSERT INTO account (name, place, type, initial_balance) VALUES ('$this_account_name', '$this_account_place', '$this_account_type', $this_account_initial_balance);"
+
+}
+
+function accountHelp() {
+  echo "${system_banner} - Account"
+  echo "  ${system_basename} add ACCOUNT_NAME ACCOUNT_PLACE ACCOUNT_TYPE INITIAL_BALANCE"
+  echo
+  echo "Account Types:"
+  echo "  bank"
+  echo "  investment"
+  echo
+  exit 0
+}
+
+function accountMain() {
+  case $1 in
+    "add")
+      shift
+      accountAdd "$@"
+      ;;
+    "help")
+      accountHelp
+      ;;
+    *)
+      accountHelp
+      ;;
+  esac
+}
