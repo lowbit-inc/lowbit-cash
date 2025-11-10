@@ -2,9 +2,9 @@
 
 ## Command Map
 
-- [ ] account
-  - [ ] add
-  - [ ] delete
+- [X] account
+  - [X] add
+  - [X] delete
   - [ ] edit
   - [ ] list
   - [ ] reconcile

@@ -17,9 +17,21 @@ function accountAdd() {
 
 }
 
+function accountDelete() {
+  if [[ $1 ]]; then
+    validate_number "$1" && this_account_id="$1"
+  else
+    echo "Error: missing account ID."
+    exit 1
+  fi
+
+  database_run "DELETE FROM account WHERE id = $this_account_id ;"
+}
+
 function accountHelp() {
   echo "${system_banner} - Account"
   echo "  ${system_basename} add ACCOUNT_NAME ACCOUNT_PLACE ACCOUNT_TYPE INITIAL_BALANCE"
+  echo "  ${system_basename} delete ACCOUNT_ID"
   echo
   echo "Account Types:"
   echo "  bank"
@@ -33,6 +45,10 @@ function accountMain() {
     "add")
       shift
       accountAdd "$@"
+      ;;
+    "delete")
+      shift
+      accountDelete "$@"
       ;;
     "help")
       accountHelp

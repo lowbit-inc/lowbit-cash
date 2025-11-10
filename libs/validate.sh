@@ -26,6 +26,19 @@ function validate_money() {
   fi
 }
 
+function validate_number() {
+  this_number="$1"
+
+  echo "${this_number}" | grep "^.[[:digit:]]*$" >/dev/null 2>&1
+  grep_rc=$?
+
+  if [[ $grep_rc -ne 0 ]]; then
+    echo "Error: invalid number format."
+    exit 1
+  fi
+
+}
+
 function validate_string() {
   true
 }
