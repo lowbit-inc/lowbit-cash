@@ -6,7 +6,7 @@
   - [X] add
   - [X] delete
   - [ ] edit
-  - [ ] list
+  - [X] list
   - [ ] reconcile
 - [ ] envelopes
   - [ ] add

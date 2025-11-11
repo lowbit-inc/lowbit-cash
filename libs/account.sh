@@ -32,12 +32,21 @@ function accountHelp() {
   echo "${system_banner} - Account"
   echo "  ${system_basename} add ACCOUNT_NAME ACCOUNT_PLACE ACCOUNT_TYPE INITIAL_BALANCE"
   echo "  ${system_basename} delete ACCOUNT_ID"
+  echo "  ${system_basename} help (this message)"
+  echo "  ${system_basename} list"
   echo
   echo "Account Types:"
   echo "  bank"
   echo "  investment"
   echo
   exit 0
+}
+
+function accountList() {
+
+  database_run "SELECT * FROM account ORDER BY type ASC, place ASC, name ASC;"
+
+
 }
 
 function accountMain() {
@@ -52,6 +61,9 @@ function accountMain() {
       ;;
     "help")
       accountHelp
+      ;;
+    "list")
+      accountList
       ;;
     *)
       accountHelp
