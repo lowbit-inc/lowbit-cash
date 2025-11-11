@@ -8,8 +8,8 @@ CREATE TABLE meta (
 CREATE TABLE account (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   name TEXT NOT NULL,
-  place TEXT NOT NULL,
+  agroup TEXT NOT NULL,
   type TEXT NOT NULL,
   initial_balance REAL NOT NULL,
-  UNIQUE (name, place)
+  UNIQUE (name, agroup)
 );
