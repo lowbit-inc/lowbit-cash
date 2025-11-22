@@ -5,8 +5,10 @@
 - [X] account
   - [X] add
   - [X] delete
-  - [ ] edit
+  - [X] edit
   - [X] list
+    - [ ] view for listing
+    - [ ] total balance
   - [ ] reconcile
 - [ ] envelopes
   - [ ] add
