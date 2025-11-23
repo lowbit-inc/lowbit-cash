@@ -18,6 +18,10 @@ function system_help() {
   exit 0
 }
 
+function system_install() {
+  sudo install -b -ls $(pwd)/$(basename $0) /usr/local/bin/cash
+}
+
 function system_version() {
   echo "${system_banner} - Version: unknown, sorry"
 }

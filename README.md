@@ -16,7 +16,7 @@
   - [X] list
   - [ ] set-budget ?
 - [X] help
-- [ ] install
+- [?] install
 - [ ] report
   - [ ] budget
   - [ ] income

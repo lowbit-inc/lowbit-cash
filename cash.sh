@@ -29,6 +29,9 @@ case "$1" in
   "help")
     system_help
     ;;
+  "install")
+    system_install
+    ;;
   "transaction")
     shift
     transactionMain "$@"
