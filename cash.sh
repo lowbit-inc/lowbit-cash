@@ -9,6 +9,7 @@
 ########
 source ./libs/account.sh
 source ./libs/database.sh
+source ./libs/envelope.sh
 source ./libs/system.sh
 source ./libs/validate.sh
 
@@ -22,11 +23,15 @@ case "$1" in
     accountMain "$@"
     ;;
   "envelope")
+    shift
+    envelope_main "$@"
     ;;
   "help")
     system_help
     ;;
   "transaction")
+    shift
+    transactionMain "$@"
     ;;
   "version")
     system_version

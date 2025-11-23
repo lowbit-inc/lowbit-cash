@@ -119,6 +119,7 @@ function accountEdit() {
 
 function accountHelp() {
   echo "${system_banner} - Account"
+  echo
   echo "  ${system_basename} account add ACCOUNT_NAME ACCOUNT_GROUP ACCOUNT_TYPE INITIAL_BALANCE"
   echo "  ${system_basename} account delete ACCOUNT_ID"
   echo "  ${system_basename} account edit ACCOUNT_ID [--name NEW_ACCOUNT_NAME] [--group NEW_ACCOUNT_GROUP] [--type NEW_ACCOUNT_TYPE] [--initial-balance NEW_INITIAL_BALANCE]"
@@ -134,8 +135,7 @@ function accountHelp() {
 
 function accountList() {
 
-  database_run "SELECT * FROM account ORDER BY type ASC, agroup ASC, name ASC;"
-
+  database_run "SELECT * FROM account_view;"
 
 }
 

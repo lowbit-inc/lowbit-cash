@@ -7,16 +7,15 @@
   - [X] delete
   - [X] edit
   - [X] list
-    - [ ] view for listing
     - [ ] total balance
   - [ ] reconcile
 - [ ] envelopes
   - [ ] add
   - [ ] delete
   - [ ] edit
-  - [ ] list
-  - [ ] set-budget
-- [ ] help
+  - [X] list
+  - [ ] set-budget ?
+- [X] help
 - [ ] install
 - [ ] report
   - [ ] budget
@@ -27,15 +26,17 @@
   - [ ] delete
   - [ ] edit
   - [ ] list
-- [ ] version
+- [X] version
 
 ## Ideas
 
-- Accounts should have type
+- [X] Accounts should have a type
 - "Income by source/type" Report
 - "Expenses by source/type" Report
 - "Budget" Report
 - Tool to help creating a balanced budget on envelopes
   - For example, first deciding on percentages (as in the 50/30/20 method)
 - Must have a budget also for Incomes
-- Must have a way to storing the projected Income by Month
+- Implement log library (with debug)
+- Implement colors
+- Implement views for listings

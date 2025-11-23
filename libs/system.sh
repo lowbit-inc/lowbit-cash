@@ -8,7 +8,11 @@ function system_help() {
   echo
   echo "Commands:"
   echo "  account"
+  echo "  envelope"
   echo "  help (this message)"
+  echo "  install"
+  echo "  report"
+  echo "  transaction"
   echo "  version"
   echo
   exit 0
