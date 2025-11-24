@@ -11,6 +11,7 @@ source ./libs/account.sh
 source ./libs/database.sh
 source ./libs/envelope.sh
 source ./libs/system.sh
+source ./libs/transaction.sh
 source ./libs/validate.sh
 
 ##########
@@ -34,7 +35,7 @@ case "$1" in
     ;;
   "transaction")
     shift
-    transactionMain "$@"
+    transaction_main "$@"
     ;;
   "version")
     system_version

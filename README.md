@@ -25,7 +25,7 @@
   - [ ] add
   - [ ] delete
   - [ ] edit
-  - [ ] list
+  - [X] list
 - [X] version
 
 ## Ideas

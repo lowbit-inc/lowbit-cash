@@ -44,3 +44,34 @@ SELECT
   envelope.budget AS 'Budget'
 FROM envelope
 ORDER BY 'Name' ASC;
+
+-- Transactions
+CREATE TABLE transactions (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  account_id INTEGER NOT NULL,
+  envelope_id INTEGER NOT NULL,
+  date TEXT NOT NULL,
+  amount REAL NOT NULL,
+  description TEXT,
+  FOREIGN KEY (account_id) REFERENCES account (id),
+  FOREIGN KEY (envelope_id) REFERENCES envelope (id)
+);
+
+INSERT INTO transactions (account_id, envelope_id, date, amount, description) VALUES (1, 1, DATE('now', '-3 days'), '-10.00', 'Doritos and soda');
+
+CREATE VIEW transactions_view AS
+SELECT
+  transactions.id AS 'ID',
+  account.name AS 'Account',
+  account.agroup AS 'Group',
+  envelope.name AS 'Envelope',
+  transactions.date AS 'Date',
+  transactions.amount AS 'Amount',
+  transactions.description AS 'Description'
+FROM transactions
+INNER JOIN account
+  ON transactions.account_id = account.id
+INNER JOIN envelope
+  ON transactions.envelope_id = envelope.id
+ORDER BY
+  'Date' ASC;
