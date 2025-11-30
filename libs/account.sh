@@ -129,91 +129,97 @@ function account_delete_help() {
 
 function account_edit() {
 
-  unset $this_update_query
-
-  if [[ $1 ]]; then
-    validate_number "$1" && this_account_id="$1"
-    shift
-  else
-    echo "Error: missing account ID."
-    exit 1
+  if [[ ! "$1" ]]; then
+    account_edit_help
   fi
 
-  # Parsing args
+  ## Parsing args
   while [[ "$1" ]]; do
-
+    log_message debug "Got arg: $1"
     case "$1" in
-      "--name")
-        shift
-        if [[ "$1" ]]; then
-          validate_string "$1" && this_account_name="$1"
-        else
-          echo "Error: missing new account name."
-          exit 1
-        fi
-
-        if [[ $this_update_query ]]; then
-          this_update_query+=" , "
-        fi
-
-        this_update_query+="name = '$this_account_name'"
-
-        ;;
       "--group")
         shift
         if [[ "$1" ]]; then
+          log_message debug "Got account group: $1"
           validate_string "$1" && this_account_group="$1"
         else
-          echo "Error: missing new account group."
-          exit 1
+          log_message error "Missing account group."
         fi
-
-        if [[ $this_update_query ]]; then
-          this_update_query+=" , "
-        fi
-
-        this_update_query+="agroup = '$this_account_group'"
-
         ;;
-      "--type")
+      "--help")
+        log_message debug "Getting help message"
+        account_add_help
+        ;;
+      "--id")
         shift
         if [[ "$1" ]]; then
-          validate_account_type "$1" && this_account_type="$1"
+          log_message debug "Got account ID: $1"
+          validate_number "$1" && this_account_id="$1"
         else
-          echo "Error: missing new account type."
-          exit 1
+          log_message error "Missing account ID."
         fi
-
-        if [[ $this_update_query ]]; then
-          this_update_query+=" , "
-        fi
-
-        this_update_query+="type = '$this_account_type'"
-
         ;;
       "--initial-balance")
         shift
         if [[ "$1" ]]; then
+          log_message debug "Got initial balance: $1"
           validate_money "$1" && this_account_initial_balance="$1"
         else
-          echo "Error: missing new account initial balance."
-          exit 1
+          log_message error "Missing initial balance."
         fi
-
-        if [[ $this_update_query ]]; then
-          this_update_query+=" , "
+        ;;
+      "--name")
+        shift
+        if [[ "$1" ]]; then
+          log_message debug "Got account name: $1"
+          validate_string "$1" && this_account_name="$1"
+        else
+          log_message error "Missing account name."
         fi
-
-        this_update_query+="initial_balance = '$this_account_initial_balance'"
-
+        ;;
+      "--type")
+        shift
+        if [[ "$1" ]]; then
+          log_message debug "Got account type: $1"
+          validate_account_type "$1" && this_account_type="$1"
+        else
+          log_message error "Missing account type."
+        fi
         ;;
     esac
-
     shift
   done
 
-  database_silent "UPDATE account set $this_update_query WHERE id = $this_account_id"
+  ## Required args
+  [[ $this_account_id ]] || log_message error "Missing account ID."
 
+  ## Optional args
+  [[ $this_account_group ]]           && this_update_query+="agroup = '$this_account_group',"
+  [[ $this_account_initial_balance ]] && this_update_query+="initial_balance = '$this_account_initial_balance',"
+  [[ $this_account_name ]]            && this_update_query+="name = '$this_account_name',"
+  [[ $this_account_type ]]            && this_update_query+="type = '$this_account_type',"
+
+  ## Action
+  this_update_query=${this_update_query%?}
+  log_message debug "Update query: $this_update_query"
+  database_silent "UPDATE account set $this_update_query WHERE id = $this_account_id"
+}
+
+function account_edit_help() {
+  echo "${system_banner} - Account Edit"
+  echo
+  echo "Usage: ${system_basename} account edit [ARGS]"
+  echo
+  echo "REQUIRED ARGS:"
+  echo "--id ACCOUNT_ID"
+  echo
+  echo "OPTIONAL ARGS:"
+  echo "--name ACCOUNT_NAME"
+  echo "--group ACCOUNT_GROUP"
+  echo "--type $account_type_list"
+  echo "--initial-balance INITIAL_BALANCE"
+  echo
+  exit 0
 }
 
 function account_help() {
@@ -224,20 +230,10 @@ function account_help() {
   echo "ACTIONS:"
   echo "- add"
   echo "- delete"
-  echo "? edit"
+  echo "- edit"
   echo "- help (this message)"
   echo "? list"
   echo
-  # echo "  ${system_basename} account add ACCOUNT_NAME ACCOUNT_GROUP ACCOUNT_TYPE INITIAL_BALANCE"
-  # echo "  ${system_basename} account delete ACCOUNT_ID"
-  # echo "  ${system_basename} account edit ACCOUNT_ID [--name NEW_ACCOUNT_NAME] [--group NEW_ACCOUNT_GROUP] [--type NEW_ACCOUNT_TYPE] [--initial-balance NEW_INITIAL_BALANCE]"
-  # echo "  ${system_basename} account help (this message)"
-  # echo "  ${system_basename} account list"
-  # echo
-  # echo "Account Types:"
-  # echo "  bank"
-  # echo "  investment"
-  # echo
   exit 0
 }
 
