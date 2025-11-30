@@ -63,9 +63,9 @@ SELECT
   transactions.amount AS 'Amount',
   transactions.description AS 'Description'
 FROM transactions
-INNER JOIN account
+LEFT JOIN account
   ON transactions.account_id = account.id
-INNER JOIN envelope
+LEFT JOIN envelope
   ON transactions.envelope_id = envelope.id
 ORDER BY
   'Date' ASC;

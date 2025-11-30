@@ -14,6 +14,17 @@ function validate_account_type() {
   fi
 }
 
+function validate_date() {
+  this_date="$1"
+
+  if [[ "$this_date" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]]; then
+    log_message debug "Validate - Date: $this_date is a valid date."
+  else
+    log_message error "Invalid date ($this_date)."
+  fi
+
+}
+
 function validate_money() {
   this_money="$1"
 
