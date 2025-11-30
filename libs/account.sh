@@ -70,7 +70,7 @@ function account_add() {
 function account_add_help() {
   echo "${system_banner} - Account Add"
   echo
-  echo "Usage: ${system_basename} account add [ARGS]"
+  echo "Usage: ${system_basename} account add ARGS"
   echo
   echo "REQUIRED ARGS:"
   echo "--name ACCOUNT_NAME"
@@ -119,7 +119,7 @@ function account_delete() {
 function account_delete_help() {
   echo "${system_banner} - Account Delete"
   echo
-  echo "Usage: ${system_basename} account delete [ARGS]"
+  echo "Usage: ${system_basename} account delete ARGS"
   echo
   echo "REQUIRED ARGS:"
   echo "--id ACCOUNT_ID"
@@ -208,7 +208,7 @@ function account_edit() {
 function account_edit_help() {
   echo "${system_banner} - Account Edit"
   echo
-  echo "Usage: ${system_basename} account edit [ARGS]"
+  echo "Usage: ${system_basename} account edit ARGS"
   echo
   echo "REQUIRED ARGS:"
   echo "--id ACCOUNT_ID"
@@ -239,8 +239,35 @@ function account_help() {
 
 function account_list() {
 
+  ## Parsing args
+  while [[ "$1" ]]; do
+    log_message debug "Got arg: $1"
+    case "$1" in
+      "--help")
+        log_message debug "Getting help message"
+        account_list_help
+        ;;
+    esac
+    shift
+  done
+
+  ## Optional args
+  # soon
+
+  ## Action
   database_run "SELECT * FROM account_view;"
 
+}
+
+function account_list_help() {
+  echo "${system_banner} - Account List"
+  echo
+  echo "Usage: ${system_basename} account list [ARGS]"
+  echo
+  echo "OPTIONAL ARGS:"
+  echo "(soon)"
+  echo
+  exit 0
 }
 
 function account_main() {
@@ -261,6 +288,7 @@ function account_main() {
       account_help
       ;;
     "list")
+      shift
       account_list "$@"
       ;;
     *)
