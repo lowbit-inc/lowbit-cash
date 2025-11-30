@@ -232,7 +232,7 @@ function account_help() {
   echo "- delete"
   echo "- edit"
   echo "- help (this message)"
-  echo "? list"
+  echo "- list"
   echo
   exit 0
 }
