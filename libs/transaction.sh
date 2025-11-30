@@ -1,5 +1,32 @@
 #!/bin/bash
 
+## Thinking...
+# Data Structure
+# - id
+# - date
+# - account
+# - envelope
+# - amount
+# - description
+#
+# Income
+# |id|date      |account|amount   |description|
+# |1 |2025-11-28|1      |+10000.00|salary     |
+#
+# Expense
+# |id|date      |account|envelope|amount|description|
+# |2 |2025-11-29|1      |1       |-78.00|medicine   |
+#
+# Account Transfer
+# |id|date      |account|amount |description|
+# |3 |2025-11-30|1      |-100.00|fatura     |
+# |4 |2025-11-30|2      |100.00 |fatura     |
+#
+# Envelope Transfer
+# |id|date      |envelope|amount|description|
+# |5 |2025-11-30|        |-50.00|extra      |
+# |6 |2025-11-30|1       |50.00 |extra      |
+
 function transaction_help() {
   echo "${system_banner} - Transactions Usage"
   echo
