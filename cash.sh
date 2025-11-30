@@ -7,10 +7,12 @@
 ########
 # Libs #
 ########
+# First
+source ./libs/log.sh
+# Others
 source ./libs/account.sh
 source ./libs/database.sh
 source ./libs/envelope.sh
-source ./libs/log.sh
 source ./libs/system.sh
 source ./libs/transaction.sh
 source ./libs/validate.sh

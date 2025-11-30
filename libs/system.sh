@@ -8,7 +8,7 @@ function system_help() {
   echo "Usage: ${system_basename} COMMAND [ACTION] [ARGS]"
   echo
   echo "MAIN COMMANDS:"
-  echo "? account"
+  echo "- account"
   echo "? envelope"
   echo "? transaction"
   echo "? report"

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-account_type_list="bank investment"
+account_type_list="bank|creditcard|investment"
 
 function account_add() {
 
@@ -79,7 +79,7 @@ function account_add_help() {
   echo "REQUIRED ARGS:"
   echo "--name ACCOUNT_NAME"
   echo "--group ACCOUNT_GROUP"
-  echo "--type bank|investment"
+  echo "--type $account_type_list"
   echo "--initial-balance INITIAL_BALANCE"
   echo
   exit 0

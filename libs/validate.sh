@@ -3,7 +3,7 @@
 function validate_account_type() {
   this_account_type="$1"
 
-  this_account_type_list="$(echo ${account_type_list} | tr ' ' '\n')"
+  this_account_type_list="$(echo ${account_type_list} | tr '|' '\n')"
   
   echo "${this_account_type_list}" | grep "^${this_account_type}\$" > /dev/null 2>&1
   grep_rc=$?

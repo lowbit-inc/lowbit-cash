@@ -16,8 +16,6 @@ CREATE TABLE account (
   UNIQUE (name, agroup)
 );
 
-INSERT INTO account (name, agroup, type, initial_balance) VALUES ('Checking', 'My Bank', 'bank', '1000.00');
-
 CREATE VIEW account_view AS
 SELECT
   account.id AS 'ID',
@@ -26,7 +24,7 @@ SELECT
   account.type AS 'Type',
   account.initial_balance AS 'Initial Balance'
 FROM account
-ORDER BY 'Type' ASC, 'Group' ASC, 'Name' ASC;
+ORDER BY 'Name' ASC, 'Group' ASC, 'Type' ASC;
 
 -- Envelope
 CREATE TABLE envelope (
@@ -34,8 +32,6 @@ CREATE TABLE envelope (
   name TEXT NOT NULL UNIQUE,
   budget REAL NOT NULL
 );
-
-INSERT INTO envelope (name, budget) VALUES ('shopping', '100.00');
 
 CREATE VIEW envelope_view AS
 SELECT
@@ -56,8 +52,6 @@ CREATE TABLE transactions (
   FOREIGN KEY (account_id) REFERENCES account (id),
   FOREIGN KEY (envelope_id) REFERENCES envelope (id)
 );
-
-INSERT INTO transactions (account_id, envelope_id, date, amount, description) VALUES (1, 1, DATE('now', '-3 days'), '-10.00', 'Doritos and soda');
 
 CREATE VIEW transactions_view AS
 SELECT
