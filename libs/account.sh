@@ -52,10 +52,6 @@ function account_add() {
           log_message error "Missing account type."
         fi
         ;;
-      *)
-        log_message debug "Getting help message"
-        account_add_help
-        ;;
     esac
     shift
   done
@@ -105,10 +101,6 @@ function account_delete() {
         fi
         ;;
       "--help")
-        log_message debug "Getting help message"
-        account_delete_help
-        ;;
-      *)
         log_message debug "Getting help message"
         account_delete_help
         ;;
