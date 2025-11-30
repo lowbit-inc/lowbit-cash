@@ -7,15 +7,17 @@
 ########
 # Libs #
 ########
-# First
+# Dependencies
+source ./libs/color.sh
 source ./libs/log.sh
-# Others
-source ./libs/account.sh
-source ./libs/database.sh
-source ./libs/envelope.sh
 source ./libs/system.sh
-source ./libs/transaction.sh
 source ./libs/validate.sh
+# Database
+source ./libs/database.sh
+# Objects
+source ./libs/account.sh
+source ./libs/envelope.sh
+source ./libs/transaction.sh
 
 ##########
 # Script #
