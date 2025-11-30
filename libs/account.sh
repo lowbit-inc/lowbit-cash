@@ -65,8 +65,8 @@ function account_add() {
   [[ $this_account_group ]]           || log_message error "Missing account group."
   [[ $this_account_type ]]            || log_message error "Missing account type."
   [[ $this_account_initial_balance ]] || log_message error "Missing account initial balance."
-  ## Action
 
+  ## Action
   database_silent "INSERT INTO account (name, agroup, type, initial_balance) VALUES ('$this_account_name', '$this_account_group', '$this_account_type', $this_account_initial_balance);"
 
 }
@@ -86,14 +86,53 @@ function account_add_help() {
 }
 
 function account_delete() {
-  if [[ $1 ]]; then
-    validate_number "$1" && this_account_id="$1"
-  else
-    echo "Error: missing account ID."
-    exit 1
+
+  if [[ ! "$1" ]]; then
+    account_delete_help
   fi
 
-  database_run "DELETE FROM account WHERE id = $this_account_id ;"
+  ## Parsing args
+  while [[ "$1" ]]; do
+    log_message debug "Got arg: $1"
+    case "$1" in
+      "--id")
+        shift
+        if [[ "$1" ]]; then
+          log_message debug "Got account ID: $1"
+          validate_number "$1" && this_account_id="$1"
+        else
+          log_message error "Missing account ID."
+        fi
+        ;;
+      "--help")
+        log_message debug "Getting help message"
+        account_delete_help
+        ;;
+      *)
+        log_message debug "Getting help message"
+        account_delete_help
+        ;;
+    esac
+    shift
+  done
+
+  ## Required args
+  [[ $this_account_id ]] || log_message error "Missing account ID."
+
+  ## Action
+  database_silent "DELETE FROM account WHERE id = $this_account_id ;"
+
+}
+
+function account_delete_help() {
+  echo "${system_banner} - Account Delete"
+  echo
+  echo "Usage: ${system_basename} account delete [ARGS]"
+  echo
+  echo "REQUIRED ARGS:"
+  echo "--id ACCOUNT_ID"
+  echo
+  exit 0
 }
 
 function account_edit() {
@@ -192,7 +231,7 @@ function account_help() {
   echo
   echo "ACTIONS:"
   echo "- add"
-  echo "? delete"
+  echo "- delete"
   echo "? edit"
   echo "? help"
   echo "? list"
