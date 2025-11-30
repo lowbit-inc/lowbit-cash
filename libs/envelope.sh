@@ -146,22 +146,6 @@ function envelope_edit() {
 
 }
 
-
-function envelope_help() {
-  echo "${system_banner} - Envelope"
-  echo
-  echo "Usage: ${system_basename} envelope ACTION"
-  echo
-  echo "ACTIONs:"
-  echo " - add"
-  echo " - delete"
-  echo " ? edit"
-  echo " ? help (this message)"
-  echo " ? list"
-  echo
-  exit 0
-}
-
 function envelope_delete() {
 
   if [[ ! "$1" ]]; then
@@ -208,11 +192,52 @@ function envelope_delete_help() {
   exit 0
 }
 
+function envelope_help() {
+  echo "${system_banner} - Envelope"
+  echo
+  echo "Usage: ${system_basename} envelope ACTION"
+  echo
+  echo "ACTIONs:"
+  echo " - add"
+  echo " - delete"
+  echo " ? edit"
+  echo " - help (this message)"
+  echo " ? list"
+  echo
+  exit 0
+}
 
 function envelope_list() {
 
+  ## Parsing args
+  while [[ "$1" ]]; do
+    log_message debug "Got arg: $1"
+    case "$1" in
+      "--help")
+        log_message debug "Getting help message"
+        envelope_list_help
+        ;;
+    esac
+    shift
+  done
+
+  ## Optional args
+  # soon
+
+  ## Action
   database_run "SELECT * FROM envelope_view;"
 
+}
+
+function envelope_list_help() {
+  echo "${system_banner} - Envelope List"
+  echo
+  echo "Usage: ${system_basename} envelope list [ARGS]"
+  echo
+  echo "OPTIONAL ARGS:"
+  echo "(soon)"
+  echo
+  exit 0
 }
 
 function envelope_main() {
@@ -229,7 +254,8 @@ function envelope_main() {
       envelope_help
       ;;
     "list")
-      envelope_list
+      shift
+      envelope_list "$@"
       ;;
     *)
       envelope_help
