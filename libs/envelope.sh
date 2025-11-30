@@ -2,29 +2,58 @@
 
 function envelope_add() {
 
-  # Parsing args
+  if [[ ! "$1" ]]; then
+    envelope_add_help
+  fi
+
+  ## Parsing args
   while [[ "$1" ]]; do
+    log_message debug "Got arg: $1"
     case "$1" in
-      "--name")
+      "--budget")
+        shift
+        if [[ "$1" ]]; then
+          log_message debug "Got envelope budget: $1"
+          validate_money "$1" && this_envelope_budget="$1"
+        else
+          log_message error "Missing envelope budget."
+        fi
         ;;
       "--help")
+        log_message debug "Getting help message"
         envelope_add_help
         ;;
-      *)
+      "--name")
+        shift
+        if [[ "$1" ]]; then
+          log_message debug "Got envelope name: $1"
+          validate_string "$1" && this_envelope_name="$1"
+        else
+          log_message error "Missing envelope name."
+        fi
         ;;
     esac
+    shift
   done
-  # Required args
-  # Action
 
-  echo "testing..."
+  ## Required args
+  [[ $this_envelope_name ]]   || log_message error "Missing envelope name."
+  [[ $this_envelope_budget ]] || log_message error "Missing envelope budget."
+
+  ## Action
+  database_silent "INSERT INTO envelope (name, budget) VALUES ('$this_envelope_name', $this_envelope_budget);"
 
 }
 
 function envelope_add_help() {
   echo "${system_banner} - Envelope Add"
   echo
-  echo "Usage:"
+  echo "Usage: ${system_basename} envelope add ARGS"
+  echo
+  echo "REQUIRED ARGS:"
+  echo "--name ENVELOPE_NAME"
+  echo "--budget MONTHLY_BUDGET"
+  echo
   exit 0
 }
 
@@ -124,11 +153,11 @@ function envelope_help() {
   echo "Usage: ${system_basename} envelope ACTION"
   echo
   echo "ACTIONs:"
-  echo " ? add"
+  echo " - add"
   echo " ? delete"
   echo " ? edit"
-  echo " - help (this message)"
-  echo " - list"
+  echo " ? help (this message)"
+  echo " ? list"
   echo
   exit 0
 }

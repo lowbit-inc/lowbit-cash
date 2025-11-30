@@ -9,7 +9,7 @@ function system_help() {
   echo
   echo "MAIN COMMANDS:"
   echo "- account"
-  echo "? envelope"
+  echo "- envelope"
   echo "? transaction"
   echo "? report"
   echo
