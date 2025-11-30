@@ -44,8 +44,8 @@ ORDER BY 'Name' ASC;
 -- Transactions
 CREATE TABLE transactions (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  account_id INTEGER NOT NULL,
-  envelope_id INTEGER NOT NULL,
+  account_id INTEGER,
+  envelope_id INTEGER,
   date TEXT NOT NULL,
   amount REAL NOT NULL,
   description TEXT,

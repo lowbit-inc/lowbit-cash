@@ -3,9 +3,9 @@
 ## Thinking...
 # Data Structure
 # - id
-# - date
 # - account
 # - envelope
+# - date
 # - amount
 # - description
 #
@@ -28,26 +28,51 @@
 # |6 |2025-11-30|1       |50.00 |extra      |
 
 function transaction_help() {
-  echo "${system_banner} - Transactions Usage"
+  echo "${system_banner} - Transactions"
   echo
-  echo "${system_basename} transaction add"
-  echo "  --account ACCOUNT_ID"
-  echo "  --envelope ENVELOPE_ID"
-  echo "  --date DATE"
-  echo "  --amount AMOUNT"
-  echo "  [--description OPTIONAL_TEXT]"
+  echo "Usage: ${system_basename} transaction ACTION [ARGS]"
   echo
-  echo "${system_basename} transaction list"
-  echo "  [--account ACCOUNT_ID]"
-  echo "  [--envelope ENVELOPE_ID]"
+  echo "ACTIONS:"
+  echo "? add"
+  echo "? delete"
+  echo "? edit"
+  echo "- help (this message)"
+  echo "- list"
   echo
   exit 0
 }
 
 function transaction_list() {
 
+  ## Parsing args
+  while [[ "$1" ]]; do
+    log_message debug "Got arg: $1"
+    case "$1" in
+      "--help")
+        log_message debug "Getting help message"
+        transaction_list_help
+        ;;
+    esac
+    shift
+  done
+
+  ## Optional args
+  # soon
+
+  ## Action
   database_run "SELECT * FROM transactions_view;"
 
+}
+
+function transaction_list_help() {
+  echo "${system_banner} - Transaction List"
+  echo
+  echo "Usage: ${system_basename} transaction list [ARGS]"
+  echo
+  echo "OPTIONAL ARGS:"
+  echo "(soon)"
+  echo
+  exit 0
 }
 
 function transaction_main() {
@@ -56,7 +81,8 @@ function transaction_main() {
       transaction_help
       ;;
     "list")
-      transaction_list
+      shift
+      transaction_list "$@"
       ;;
     *)
       transaction_help

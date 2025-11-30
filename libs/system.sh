@@ -10,7 +10,7 @@ function system_help() {
   echo "MAIN COMMANDS:"
   echo "- account"
   echo "- envelope"
-  echo "? transaction"
+  echo "- transaction"
   echo "? report"
   echo
   echo "SYSTEM COMMANDS:"
