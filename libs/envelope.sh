@@ -192,6 +192,79 @@ function envelope_delete_help() {
   exit 0
 }
 
+function envelope_edit() {
+
+  if [[ ! "$1" ]]; then
+    envelope_edit_help
+  fi
+
+  ## Parsing args
+  while [[ "$1" ]]; do
+    log_message debug "Got arg: $1"
+    case "$1" in
+      "--budget")
+        shift
+        if [[ "$1" ]]; then
+          log_message debug "Got envelope budget: $1"
+          validate_money "$1" && this_envelope_budget="$1"
+        else
+          log_message error "Missing envelope budget."
+        fi
+        ;;
+      "--help")
+        log_message debug "Getting help message"
+        envelope_add_help
+        ;;
+      "--id")
+        shift
+        if [[ "$1" ]]; then
+          log_message debug "Got envelope ID: $1"
+          validate_number "$1" && this_envelope_id="$1"
+        else
+          log_message error "Missing envelope ID."
+        fi
+        ;;
+      "--name")
+        shift
+        if [[ "$1" ]]; then
+          log_message debug "Got envelope name: $1"
+          validate_string "$1" && this_envelope_name="$1"
+        else
+          log_message error "Missing envelope name."
+        fi
+        ;;
+    esac
+    shift
+  done
+
+  ## Required args
+  [[ $this_envelope_id ]] || log_message error "Missing envelope ID."
+
+  ## Optional args
+  [[ $this_envelope_budget ]] && this_update_query+="budget = '$this_envelope_budget',"
+  [[ $this_envelope_name ]]   && this_update_query+="name = '$this_envelope_name',"
+
+  ## Action
+  this_update_query=${this_update_query%?}
+  log_message debug "Update query: $this_update_query"
+  database_silent "UPDATE envelope set $this_update_query WHERE id = $this_envelope_id"
+}
+
+function envelope_edit_help() {
+  echo "${system_banner} - Envelope Edit"
+  echo
+  echo "Usage: ${system_basename} envelope edit ARGS"
+  echo
+  echo "REQUIRED ARGS:"
+  echo "--id ENVELOPE_ID"
+  echo
+  echo "OPTIONAL ARGS:"
+  echo "--name ENVELOPE_NAME"
+  echo "--budget MONTHLY_BUDGET"
+  echo
+  exit 0
+}
+
 function envelope_help() {
   echo "${system_banner} - Envelope"
   echo
@@ -200,9 +273,9 @@ function envelope_help() {
   echo "ACTIONs:"
   echo " - add"
   echo " - delete"
-  echo " ? edit"
+  echo " - edit"
   echo " - help (this message)"
-  echo " ? list"
+  echo " - list"
   echo
   exit 0
 }
@@ -249,6 +322,10 @@ function envelope_main() {
     "delete")
       shift
       envelope_delete "$@"
+      ;;
+    "edit")
+      shift
+      envelope_edit "$@"
       ;;
     "help")
       envelope_help
