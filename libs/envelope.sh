@@ -154,13 +154,60 @@ function envelope_help() {
   echo
   echo "ACTIONs:"
   echo " - add"
-  echo " ? delete"
+  echo " - delete"
   echo " ? edit"
   echo " ? help (this message)"
   echo " ? list"
   echo
   exit 0
 }
+
+function envelope_delete() {
+
+  if [[ ! "$1" ]]; then
+    envelope_delete_help
+  fi
+
+  ## Parsing args
+  while [[ "$1" ]]; do
+    log_message debug "Got arg: $1"
+    case "$1" in
+      "--id")
+        shift
+        if [[ "$1" ]]; then
+          log_message debug "Got envelope ID: $1"
+          validate_number "$1" && this_envelope_id="$1"
+        else
+          log_message error "Missing envelope ID."
+        fi
+        ;;
+      "--help")
+        log_message debug "Getting help message"
+        envelope_delete_help
+        ;;
+    esac
+    shift
+  done
+
+  ## Required args
+  [[ $this_envelope_id ]] || log_message error "Missing envelope ID."
+
+  ## Action
+  database_silent "DELETE FROM envelope WHERE id = $this_envelope_id;"
+
+}
+
+function envelope_delete_help() {
+  echo "${system_banner} - Envelope Delete"
+  echo
+  echo "Usage: ${system_basename} envelope delete ARGS"
+  echo
+  echo "REQUIRED ARGS:"
+  echo "--id ENVELOPE_ID"
+  echo
+  exit 0
+}
+
 
 function envelope_list() {
 
@@ -173,6 +220,10 @@ function envelope_main() {
     "add")
       shift
       envelope_add "$@"
+      ;;
+    "delete")
+      shift
+      envelope_delete "$@"
       ;;
     "help")
       envelope_help
