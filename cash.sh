@@ -30,7 +30,7 @@ case "$1" in
     shift
     envelope_main "$@"
     ;;
-  "help")
+  "help"|"--help"|"-h")
     system_help
     ;;
   "install")
@@ -40,7 +40,7 @@ case "$1" in
     shift
     transaction_main "$@"
     ;;
-  "version")
+  "version"|"--version"|"-v")
     system_version
     ;;
   *)

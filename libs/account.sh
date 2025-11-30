@@ -1,6 +1,6 @@
 #!/bin/bash
 
-account_type_list="bank|creditcard|investment"
+account_type_list="bank|creditcard|investment|money"
 
 function account_add() {
 
@@ -225,7 +225,7 @@ function account_help() {
   echo "- add"
   echo "- delete"
   echo "? edit"
-  echo "? help"
+  echo "- help (this message)"
   echo "? list"
   echo
   # echo "  ${system_basename} account add ACCOUNT_NAME ACCOUNT_GROUP ACCOUNT_TYPE INITIAL_BALANCE"
