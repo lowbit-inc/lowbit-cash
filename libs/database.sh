@@ -26,6 +26,13 @@ function database_silent(){
   this_query="$@"
 
   sqlite3 --csv "${database_path}" "${this_query}"
+  sqliteRC=$?
+
+  if [[ $sqliteRC -eq 0 ]]; then
+    log_message debug "Database command: OK"
+  else
+    log_message debug "Database command: Error"
+  fi
 }
 
 database_check

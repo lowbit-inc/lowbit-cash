@@ -3,20 +3,20 @@ system_banner="Lowbit Cash"
 system_basename="$(basename $0)"
 
 function system_help() {
-  echo "${system_banner} - Usage:"
+  echo "${system_banner} - Help"
   echo
-  echo "  ${system_basename} COMMAND ARGS"
+  echo "Usage: ${system_basename} COMMAND [ACTION] [ARGS]"
   echo
-  echo "Cash commands:"
-  echo "  account"
-  echo "  envelope"
-  echo "  transaction"
-  echo "  report"
+  echo "MAIN COMMANDS:"
+  echo "? account"
+  echo "? envelope"
+  echo "? transaction"
+  echo "? report"
   echo
-  echo "System commands:"
-  echo "  help (this message)"
-  echo "  install"
-  echo "  version"
+  echo "SYSTEM COMMANDS:"
+  echo "? help (this message)"
+  echo "? install"
+  echo "? version"
   echo
   exit 0
 }

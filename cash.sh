@@ -10,6 +10,7 @@
 source ./libs/account.sh
 source ./libs/database.sh
 source ./libs/envelope.sh
+source ./libs/log.sh
 source ./libs/system.sh
 source ./libs/transaction.sh
 source ./libs/validate.sh
@@ -21,7 +22,7 @@ source ./libs/validate.sh
 case "$1" in
   "account")
     shift
-    accountMain "$@"
+    account_main "$@"
     ;;
   "envelope")
     shift
