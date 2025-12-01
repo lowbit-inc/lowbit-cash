@@ -14,9 +14,9 @@ function system_help() {
   echo "? report"
   echo
   echo "SYSTEM COMMANDS:"
-  echo "? help (this message)"
+  echo "- help (this message)"
   echo "? install"
-  echo "? version"
+  echo "- version"
   echo
   exit 0
 }

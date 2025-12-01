@@ -16,9 +16,10 @@ function log_message() {
       fi
       ;;
     "info")
-      echo "[$(date +'%Y-%m-%d %H:%M:%S')] [$this_log_level] $this_log_message"
+      echo "[$(date +'%Y-%m-%d %H:%M:%S')] [$this_log_level ] $this_log_message"
       ;;
     "warn")
+      echo "[$(date +'%Y-%m-%d %H:%M:%S')] [$this_log_level ] $this_log_message"
       ;;
     "error")
       echo "[$(date +'%Y-%m-%d %H:%M:%S')] [$this_log_level] $this_log_message"
