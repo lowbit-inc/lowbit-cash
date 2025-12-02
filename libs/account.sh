@@ -63,7 +63,9 @@ function account_add() {
   [[ $this_account_initial_balance ]] || log_message error "Missing account initial balance."
 
   ## Action
-  database_silent "INSERT INTO account (name, agroup, type, initial_balance) VALUES ('$this_account_name', '$this_account_group', '$this_account_type', $this_account_initial_balance);"
+  database_silent "INSERT INTO account (name, agroup, type) VALUES ('$this_account_name', '$this_account_group', '$this_account_type');"
+  this_account_id=$(database_silent "SELECT id FROM account WHERE name = '$this_account_name' AND agroup = '$this_account_group';")
+  database_silent "INSERT INTO transactions (account_id, date, amount, description) VALUES ($this_account_id, DATE('now', 'localtime'), $this_account_initial_balance, 'Opening balance');"
 
 }
 
@@ -195,7 +197,6 @@ function account_edit() {
 
   ## Optional args
   [[ $this_account_group ]]           && this_update_query+="agroup = '$this_account_group',"
-  [[ $this_account_initial_balance ]] && this_update_query+="initial_balance = '$this_account_initial_balance',"
   [[ $this_account_name ]]            && this_update_query+="name = '$this_account_name',"
   [[ $this_account_type ]]            && this_update_query+="type = '$this_account_type',"
 
@@ -217,7 +218,6 @@ function account_edit_help() {
   echo "--name ACCOUNT_NAME"
   echo "--group ACCOUNT_GROUP"
   echo "--type $account_type_list"
-  echo "--initial-balance INITIAL_BALANCE"
   echo
   exit 0
 }

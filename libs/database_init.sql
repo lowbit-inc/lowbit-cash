@@ -12,7 +12,6 @@ CREATE TABLE account (
   name TEXT NOT NULL,
   agroup TEXT NOT NULL,
   type TEXT NOT NULL,
-  initial_balance REAL NOT NULL,
   UNIQUE (name, agroup)
 );
 
@@ -21,8 +20,7 @@ SELECT
   account.id AS 'ID',
   account.name AS 'Name',
   account.agroup AS 'Group',
-  account.type AS 'Type',
-  account.initial_balance AS 'Initial Balance'
+  account.type AS 'Type'
 FROM account
 ORDER BY 'Name' ASC, 'Group' ASC, 'Type' ASC;
 
