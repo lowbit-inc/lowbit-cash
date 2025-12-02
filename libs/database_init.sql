@@ -6,7 +6,7 @@ CREATE TABLE meta (
 
 INSERT INTO meta VALUES ("db_schema", "1");
 
--- Account
+-- Tables
 CREATE TABLE account (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   name TEXT NOT NULL,
@@ -15,31 +15,12 @@ CREATE TABLE account (
   UNIQUE (name, agroup)
 );
 
-CREATE VIEW account_view AS
-SELECT
-  account.id AS 'ID',
-  account.name AS 'Name',
-  account.agroup AS 'Group',
-  account.type AS 'Type'
-FROM account
-ORDER BY 'Name' ASC, 'Group' ASC, 'Type' ASC;
-
--- Envelope
 CREATE TABLE envelope (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   name TEXT NOT NULL UNIQUE,
   budget REAL NOT NULL
 );
 
-CREATE VIEW envelope_view AS
-SELECT
-  envelope.id AS 'ID',
-  envelope.name AS 'Name',
-  envelope.budget AS 'Budget'
-FROM envelope
-ORDER BY 'Name' ASC;
-
--- Transactions
 CREATE TABLE transactions (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   account_id INTEGER,
@@ -51,6 +32,40 @@ CREATE TABLE transactions (
   FOREIGN KEY (envelope_id) REFERENCES envelope (id)
 );
 
+-- Views
+CREATE VIEW account_view AS
+SELECT
+  account.id as 'ID',
+  account.name AS 'Name',
+  account.agroup AS 'Group',
+  account.type AS 'Type',
+  SUM(transactions.amount) AS 'Balance'
+FROM
+  account
+JOIN
+  transactions ON transactions.account_id = account.id
+GROUP BY
+  account.id
+ORDER BY
+  account.name ASC,
+  account.agroup ASC,
+  account.type ASC;
+
+CREATE VIEW envelope_view AS
+SELECT
+  envelope.id AS 'ID',
+  envelope.name AS 'Name',
+  envelope.budget AS 'Budget',
+  SUM(transactions.amount) AS 'Balance'
+FROM
+  envelope
+LEFT JOIN
+  transactions ON transactions.envelope_id = envelope.id
+GROUP BY
+  envelope.id
+ORDER BY
+  envelope.name ASC;
+
 CREATE VIEW transactions_view AS
 SELECT
   transactions.id AS 'ID',
@@ -60,10 +75,11 @@ SELECT
   transactions.date AS 'Date',
   transactions.amount AS 'Amount',
   transactions.description AS 'Description'
-FROM transactions
-LEFT JOIN account
-  ON transactions.account_id = account.id
-LEFT JOIN envelope
-  ON transactions.envelope_id = envelope.id
+FROM
+  transactions
+LEFT JOIN
+  account ON transactions.account_id = account.id
+LEFT JOIN
+  envelope ON transactions.envelope_id = envelope.id
 ORDER BY
-  'Date' ASC;
+  transactions.date ASC;

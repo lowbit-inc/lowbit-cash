@@ -40,3 +40,4 @@
 - Implement log library (with debug)
 - Implement colors
 - Implement views for listings
+- Income envelopes x expense envelopes
