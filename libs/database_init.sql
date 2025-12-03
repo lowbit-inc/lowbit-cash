@@ -44,7 +44,7 @@ SELECT
   SUM(transactions.amount) AS 'Balance'
 FROM
   account
-JOIN
+LEFT JOIN
   transactions ON transactions.account_id = account.id
 GROUP BY
   account.id
@@ -68,7 +68,7 @@ LEFT JOIN
 GROUP BY
   envelope.id
 ORDER BY
-  envelope.name ASC, envelope.egroup ASC, envelope.type DESC;
+  envelope.type DESC, envelope.egroup ASC, envelope.name ASC;
 
 CREATE VIEW transactions_view AS
 SELECT

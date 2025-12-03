@@ -64,8 +64,6 @@ function account_add() {
 
   ## Action
   database_silent "INSERT INTO account (name, agroup, type) VALUES ('$this_account_name', '$this_account_group', '$this_account_type');"
-  this_account_id=$(database_silent "SELECT id FROM account WHERE name = '$this_account_name' AND agroup = '$this_account_group';")
-  database_silent "INSERT INTO transactions (account_id, date, amount, description) VALUES ($this_account_id, DATE('now', 'localtime'), $this_account_initial_balance, 'Opening balance');"
 
 }
 

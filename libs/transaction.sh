@@ -1,32 +1,5 @@
 #!/bin/bash
 
-## Thinking...
-# Data Structure
-# - account
-# - amount
-# - date
-# - description
-# - envelope
-# - id
-#
-# Income
-# |id|date      |account|amount   |description|
-# |1 |2025-11-28|1      |+10000.00|salary     |
-#
-# Expense
-# |id|date      |account|envelope|amount|description|
-# |2 |2025-11-29|1      |1       |-78.00|medicine   |
-#
-# Account Transfer
-# |id|date      |account|amount |description|
-# |3 |2025-11-30|1      |-100.00|fatura     |
-# |4 |2025-11-30|2      |100.00 |fatura     |
-#
-# Envelope Transfer
-# |id|date      |envelope|amount|description|
-# |5 |2025-11-30|        |-50.00|extra      |
-# |6 |2025-11-30|1       |50.00 |extra      |
-
 function transaction_add_account_transfer() {
 
   if [[ ! "$1" ]]; then
@@ -345,6 +318,15 @@ function transaction_add_income() {
           log_message error "Missing transaction description."
         fi
         ;;
+      "--envelope")
+        shift
+        if [[ "$1" ]]; then
+          log_message debug "Got envelope ID: $1"
+          validate_number "$1" && this_transaction_envelope_id="$1"
+        else
+          log_message error "Missing envelope ID."
+        fi
+        ;;
       "--help")
         log_message debug "Getting help message"
         transaction_add_income_help
@@ -355,12 +337,13 @@ function transaction_add_income() {
 
   ## Required args
   [[ $this_transaction_account_id ]]  || log_message error "Missing account ID."
+  [[ $this_transaction_envelope_id ]] || log_message error "Missing envelope ID."
   [[ $this_transaction_amount ]]      || log_message error "Missing transaction amount."
   [[ $this_transaction_date ]]        || log_message error "Missing transaction date."
   [[ $this_transaction_description ]] || log_message error "Missing account description."
 
   ## Action
-  database_silent "INSERT INTO transactions (account_id, amount, date, description) VALUES ($this_transaction_account_id, $this_transaction_amount, '$this_transaction_date', '$this_transaction_description');"
+  database_silent "INSERT INTO transactions (account_id, envelope_id, amount, date, description) VALUES ($this_transaction_account_id, $this_transaction_envelope_id, $this_transaction_amount, '$this_transaction_date', '$this_transaction_description');"
 
 }
 
