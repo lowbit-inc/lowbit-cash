@@ -18,13 +18,15 @@ CREATE TABLE account (
 CREATE TABLE envelope (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   name TEXT NOT NULL UNIQUE,
+  egroup TEXT NOT NULL,
+  type TEXT NOT NULL,
   budget REAL NOT NULL
 );
 
 CREATE TABLE transactions (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  account_id INTEGER,
-  envelope_id INTEGER,
+  account_id INTEGER NOT NULL,
+  envelope_id INTEGER NOT NULL,
   date TEXT NOT NULL,
   amount REAL NOT NULL,
   description TEXT,
@@ -55,6 +57,8 @@ CREATE VIEW envelope_view AS
 SELECT
   envelope.id AS 'ID',
   envelope.name AS 'Name',
+  envelope.egroup AS 'Group',
+  envelope.type AS 'Type',
   envelope.budget AS 'Budget',
   SUM(transactions.amount) AS 'Balance'
 FROM
@@ -64,7 +68,7 @@ LEFT JOIN
 GROUP BY
   envelope.id
 ORDER BY
-  envelope.name ASC;
+  envelope.name ASC, envelope.egroup ASC, envelope.type DESC;
 
 CREATE VIEW transactions_view AS
 SELECT

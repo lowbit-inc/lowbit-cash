@@ -25,6 +25,25 @@ function validate_date() {
 
 }
 
+function validate_envelope_type() {
+  this_envelope_type="$1"
+
+  log_message debug "Validating envelope type: ${this_envelope_type}"
+
+  case "${this_envelope_type}" in
+    "income")
+      log_message debug "  OK"
+      ;;
+    "expense")
+      log_message debug "  OK"
+      ;;
+    *)
+      log_message error "Unknown envelope type (${this_envelope_type})"
+      ;;
+  esac
+
+}
+
 function validate_money() {
   this_money="$1"
 

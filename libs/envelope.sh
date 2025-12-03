@@ -19,6 +19,15 @@ function envelope_add() {
           log_message error "Missing envelope budget."
         fi
         ;;
+      "--group")
+        shift
+        if [[ "$1" ]]; then
+          log_message debug "Got envelope group: $1"
+          validate_string "$1" && this_envelope_group="$1"
+        else
+          log_message error "Missing envelope group."
+        fi
+        ;;
       "--help")
         log_message debug "Getting help message"
         envelope_add_help
@@ -32,16 +41,27 @@ function envelope_add() {
           log_message error "Missing envelope name."
         fi
         ;;
+      "--type")
+        shift
+        if [[ "$1" ]]; then
+          log_message debug "Got envelope type: $1"
+          validate_envelope_type "$1" && this_envelope_type="$1"
+        else
+          log_message error "Missing envelope type."
+        fi
+        ;;
     esac
     shift
   done
 
   ## Required args
   [[ $this_envelope_name ]]   || log_message error "Missing envelope name."
+  [[ $this_envelope_group ]]  || log_message error "Missing envelope group."
+  [[ $this_envelope_type ]]   || log_message error "Missing envelope type."
   [[ $this_envelope_budget ]] || log_message error "Missing envelope budget."
 
   ## Action
-  database_silent "INSERT INTO envelope (name, budget) VALUES ('$this_envelope_name', $this_envelope_budget);"
+  database_silent "INSERT INTO envelope (name, egroup, type, budget) VALUES ('$this_envelope_name', '${this_envelope_group}', '${this_envelope_type}', $this_envelope_budget);"
 
 }
 
@@ -52,6 +72,8 @@ function envelope_add_help() {
   echo
   echo "REQUIRED ARGS:"
   echo "--name ENVELOPE_NAME"
+  echo "--group ENVELOPE_GROUP"
+  echo "--type income|expense"
   echo "--budget MONTHLY_BUDGET"
   echo
   exit 0
@@ -299,10 +321,10 @@ function envelope_list() {
 
   ## Action
   database_run "SELECT * FROM envelope_view;"
-  echo -n "Total: "
-  database_silent "SELECT SUM(Balance) FROM envelope_view;"
-
-
+  echo -n "Total balance: "     ; database_silent "SELECT SUM(Balance) FROM envelope_view;"
+  echo
+  echo -n "Budget - Income: "   ; database_silent "SELECT SUM(Budget) FROM envelope_view WHERE Type = 'income';"
+  echo -n "Budget - Expense: "  ; database_silent "SELECT SUM(Budget) FROM envelope_view WHERE Type = 'expense';"
 }
 
 function envelope_list_help() {
