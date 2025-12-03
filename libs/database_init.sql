@@ -17,16 +17,17 @@ CREATE TABLE account (
 
 CREATE TABLE envelope (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  name TEXT NOT NULL UNIQUE,
+  name TEXT NOT NULL,
   egroup TEXT NOT NULL,
   type TEXT NOT NULL,
-  budget REAL NOT NULL
+  budget REAL NOT NULL,
+  UNIQUE (name, egroup)
 );
 
 CREATE TABLE transactions (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  account_id INTEGER NOT NULL,
-  envelope_id INTEGER NOT NULL,
+  account_id INTEGER,
+  envelope_id INTEGER,
   date TEXT NOT NULL,
   amount REAL NOT NULL,
   description TEXT,

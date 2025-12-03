@@ -354,6 +354,7 @@ function transaction_add_income_help() {
   echo
   echo "REQUIRED ARGS:"
   echo "--account ACCOUNT_ID"
+  echo "--envelope ENVELOPE_ID"
   echo "--date DATE"
   echo "--amount AMOUNT"
   echo "--description DESCRIPTION"
