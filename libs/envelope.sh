@@ -299,6 +299,9 @@ function envelope_list() {
 
   ## Action
   database_run "SELECT * FROM envelope_view;"
+  echo -n "Total: "
+  database_silent "SELECT SUM(Balance) FROM envelope_view;"
+
 
 }
 

@@ -256,6 +256,8 @@ function account_list() {
 
   ## Action
   database_run "SELECT * FROM account_view;"
+  echo -n "Total: "
+  database_silent "SELECT SUM(Balance) FROM account_view;"
 
 }
 
