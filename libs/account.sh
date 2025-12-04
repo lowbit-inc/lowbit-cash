@@ -85,36 +85,10 @@ function account_add_help() {
 
 function account_balance() {
 
-  ## Parsing args
-  while [[ "$1" ]]; do
-    log_message debug "Got arg: $1"
-    case "$1" in
-      "--help")
-        log_message debug "Getting help message"
-        account_balance_help
-        ;;
-    esac
-    shift
-  done
+  printf "Total balance: ${color_bold}"
+    database_silent "SELECT COALESCE(SUM(Balance), 0.00) FROM account_view;"
+  printf "${color_reset}"
 
-  ## Optional args
-  # soon
-
-  ## Action
-  echo -n "Total balance: "
-  database_silent "SELECT SUM(Balance) FROM account_view;"
-
-}
-
-function account_balance_help() {
-  echo "${system_banner} - Account Balance"
-  echo
-  echo "Usage: ${system_basename} account balance [ARGS]"
-  echo
-  echo "OPTIONAL ARGS:"
-  echo "(soon)"
-  echo
-  exit 0
 }
 
 function account_delete() {
@@ -257,17 +231,17 @@ function account_edit_help() {
 }
 
 function account_help() {
-  echo "${system_banner} - Account"
-  echo
-  echo "Usage: ${system_basename} account ACTION [ARGS]"
-  echo
-  echo "ACTIONS:"
-  echo "- add"
-  echo "- delete"
-  echo "- edit"
-  echo "- help (this message)"
-  echo "- list"
-  echo
+  printf "${color_bold}${system_banner} - Account\n${color_reset}"
+  printf "\n"
+  printf "${color_underline}Usage:${color_reset} ${color_bold}${system_basename} account${color_reset} ${color_bright_green}ACTION${color_reset} ${color_gray}[${color_reset}${color_bright_green}ARGS${color_reset}${color_gray}]${color_reset}\n"
+  printf "\n"
+  printf "${color_bold}ACTIONS:${color_reset}\n"
+  printf "  add\n"
+  printf "  delete\n"
+  printf "  edit\n"
+  printf "  help    ${color_gray}(this message)${color_reset}\n"
+  printf "  list\n"
+  printf "\n"
   exit 0
 }
 
@@ -290,9 +264,7 @@ function account_list() {
 
   ## Action
   database_run "SELECT * FROM account_view;"
-  printf "Total balance: ${color_bold}"
-    database_silent "SELECT COALESCE(SUM(Balance), 0.00) FROM account_view;"
-  printf "${color_reset}"
+  account_balance
 
 }
 
