@@ -9,20 +9,22 @@ function log_message() {
     exit 1
   fi
 
+  this_timestamp=$(date +'%Y-%m-%d %H:%M:%S')
+
   case "$this_log_level" in
     "debug")
       if [[ $DEBUG == "true" ]]; then
-        echo "[$(date +'%Y-%m-%d %H:%M:%S')] [$this_log_level] $this_log_message"
+        printf "${color_gray}[${this_timestamp}] [$this_log_level]${color_reset} $this_log_message\n"
       fi
       ;;
     "info")
-      echo "[$(date +'%Y-%m-%d %H:%M:%S')] [$this_log_level ] $this_log_message"
+      printf "${color_gray}[${this_timestamp}] [${color_bright_blue}$this_log_level ${color_gray}]${color_reset} $this_log_message\n"
       ;;
     "warn")
-      echo "[$(date +'%Y-%m-%d %H:%M:%S')] [$this_log_level ] $this_log_message"
+      printf "${color_gray}[${this_timestamp}] [${color_bright_yellow}$this_log_level ${color_gray}]${color_reset} $this_log_message\n"
       ;;
     "error")
-      echo "[$(date +'%Y-%m-%d %H:%M:%S')] [$this_log_level] $this_log_message"
+      printf "${color_gray}[${this_timestamp}] [${color_bright_red}$this_log_level${color_gray}]${color_reset} $this_log_message\n"
       exit 1
       ;;
   esac

@@ -1,6 +1,7 @@
 #!/bin/zsh
 system_banner="Lowbit Cash"
 system_basename="$(basename $0)"
+system_version="0.1.0-dev"
 
 function system_help() {
   printf "${color_bold}${system_banner} - Help${color_reset}\n"
@@ -26,6 +27,6 @@ function system_install() {
   sudo install -b -ls $(pwd)/$(basename $0) /usr/local/bin/cash
 }
 
-function system_version() {
-  echo "${system_banner} - Version: unknown, sorry"
+function system_get_version() {
+  echo "${system_banner} - Version: ${system_version}"
 }

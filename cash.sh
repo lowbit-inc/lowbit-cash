@@ -47,7 +47,7 @@ case "$1" in
     transaction_main "$@"
     ;;
   "version"|"--version"|"-v")
-    system_version
+    system_get_version
     ;;
   *)
     system_help
