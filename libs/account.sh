@@ -85,9 +85,15 @@ function account_add_help() {
 
 function account_balance() {
 
-  printf "Total balance: ${color_bold}"
-    database_silent "SELECT COALESCE(SUM(Balance), 0.00) FROM account_view;"
-  printf "${color_reset}"
+  this_account_balance=$(database_silent "SELECT COALESCE(SUM(Balance), 0.00) FROM account_view;")
+
+  printf "Total balance:"
+  if [[ "${this_account_balance:0:1}" != "-" ]]; then
+    printf "${color_bright_green}"
+  else
+    printf "${color_bright_red}"
+  fi
+  printf " ${this_account_balance}${color_reset}\n"
 
 }
 
