@@ -20,9 +20,11 @@ CREATE TABLE envelope (
   name TEXT NOT NULL,
   egroup TEXT NOT NULL,
   type TEXT NOT NULL,
-  budget REAL NOT NULL,
+  budget REAL,
   UNIQUE (name, egroup)
 );
+
+INSERT INTO envelope (id, name, egroup, type) VALUES (1, 'Unallocated', '--', '--');
 
 CREATE TABLE transactions (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -42,7 +44,7 @@ SELECT
   account.name AS 'Name',
   account.agroup AS 'Group',
   account.type AS 'Type',
-  SUM(transactions.amount) AS 'Balance'
+  COALESCE(SUM(transactions.amount), 0.00) AS 'Balance'
 FROM
   account
 LEFT JOIN
@@ -61,7 +63,7 @@ SELECT
   envelope.egroup AS 'Group',
   envelope.type AS 'Type',
   envelope.budget AS 'Budget',
-  SUM(transactions.amount) AS 'Balance'
+  COALESCE(SUM(transactions.amount), 0.00) AS 'Balance'
 FROM
   envelope
 LEFT JOIN
@@ -74,9 +76,10 @@ ORDER BY
 CREATE VIEW transactions_view AS
 SELECT
   transactions.id AS 'ID',
-  account.name AS 'Account',
-  account.agroup AS 'Group',
-  envelope.name AS 'Envelope',
+  account.name AS 'Account Name',
+  account.agroup AS 'Account Group',
+  envelope.name AS 'Envelope Name',
+  envelope.egroup AS 'Envelope Group',
   transactions.date AS 'Date',
   transactions.amount AS 'Amount',
   transactions.description AS 'Description'

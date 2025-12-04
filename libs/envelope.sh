@@ -321,10 +321,16 @@ function envelope_list() {
 
   ## Action
   database_run "SELECT * FROM envelope_view;"
-  echo -n "Total balance: "     ; database_silent "SELECT SUM(Balance) FROM envelope_view;"
-  echo
-  echo -n "Budget - Income: "   ; database_silent "SELECT SUM(Budget) FROM envelope_view WHERE Type = 'income';"
-  echo -n "Budget - Expense: "  ; database_silent "SELECT SUM(Budget) FROM envelope_view WHERE Type = 'expense';"
+
+  printf "Total balance:     ${color_bold}"
+    database_silent "SELECT COALESCE(SUM(Balance), 0.00) FROM envelope_view"
+    printf "${color_reset}\n"
+  printf "Budget - Income:   ${color_bold}"
+    database_silent "SELECT COALESCE(SUM(Budget), 0.00) FROM envelope_view WHERE Type = 'income';"
+    printf "${color_reset}"
+  printf "Budget - Expense:  ${color_bold}"
+    database_silent "SELECT COALESCE(SUM(Budget), 0.00) FROM envelope_view WHERE Type = 'expense';"
+    printf "${color_reset}"
 }
 
 function envelope_list_help() {

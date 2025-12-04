@@ -1,23 +1,24 @@
-#!/bin/bash
+#!/bin/zsh
 system_banner="Lowbit Cash"
 system_basename="$(basename $0)"
 
 function system_help() {
-  echo "${system_banner} - Help"
-  echo
-  echo "Usage: ${system_basename} COMMAND [ACTION] [ARGS]"
-  echo
-  echo "MAIN COMMANDS:"
-  echo "- account"
-  echo "- envelope"
-  echo "- transaction"
-  echo "? report"
-  echo
-  echo "SYSTEM COMMANDS:"
-  echo "- help (this message)"
-  echo "? install"
-  echo "- version"
-  echo
+  printf "${color_bold}${system_banner} - Help${color_reset}\n"
+  printf "\n"
+  printf "${color_underline}Usage:${color_reset} ${system_basename} ${color_bright_red}COMMAND${color_reset} ${color_gray}[${color_reset}${color_bright_green}ACTION${color_reset}${color_gray}]${color_reset} ${color_gray}[${color_reset}${color_bright_blue}ARGS${color_reset}${color_gray}]${color_reset}\n"
+  printf "\n"
+  printf "${color_bold}MAIN COMMANDS:${color_reset}\n"
+  printf "  account\n"
+  printf "  balance\n"
+  printf "  envelope\n"
+  printf "  transaction\n"
+  printf "  report\n"
+  printf "\n"
+  printf "${color_bold}SYSTEM COMMANDS:${color_reset}\n"
+  printf "  help      ${color_gray}(this message)${color_reset}\n"
+  printf "  install\n"
+  printf "  version\n"
+  printf "\n"
   exit 0
 }
 

@@ -28,6 +28,10 @@ case "$1" in
     shift
     account_main "$@"
     ;;
+  "balance")
+    shift
+    account_balance "$@"
+    ;;
   "envelope")
     shift
     envelope_main "$@"

@@ -64,6 +64,8 @@ function account_add() {
 
   ## Action
   database_silent "INSERT INTO account (name, agroup, type) VALUES ('$this_account_name', '$this_account_group', '$this_account_type');"
+  this_account_id=$(database_silent "SELECT id FROM account WHERE name = '${this_account_name}' AND agroup = '${this_account_group}'")
+  database_silent "INSERT INTO transactions (account_id, envelope_id, date, amount, description) VALUES (${this_account_id}, 1, DATE('now', 'localtime'), ${this_account_initial_balance}, 'Opening balance');"
 
 }
 
@@ -77,6 +79,40 @@ function account_add_help() {
   echo "--group ACCOUNT_GROUP"
   echo "--type $account_type_list"
   echo "--initial-balance INITIAL_BALANCE"
+  echo
+  exit 0
+}
+
+function account_balance() {
+
+  ## Parsing args
+  while [[ "$1" ]]; do
+    log_message debug "Got arg: $1"
+    case "$1" in
+      "--help")
+        log_message debug "Getting help message"
+        account_balance_help
+        ;;
+    esac
+    shift
+  done
+
+  ## Optional args
+  # soon
+
+  ## Action
+  echo -n "Total balance: "
+  database_silent "SELECT SUM(Balance) FROM account_view;"
+
+}
+
+function account_balance_help() {
+  echo "${system_banner} - Account Balance"
+  echo
+  echo "Usage: ${system_basename} account balance [ARGS]"
+  echo
+  echo "OPTIONAL ARGS:"
+  echo "(soon)"
   echo
   exit 0
 }
@@ -254,8 +290,9 @@ function account_list() {
 
   ## Action
   database_run "SELECT * FROM account_view;"
-  echo -n "Total balance: "
-  database_silent "SELECT SUM(Balance) FROM account_view;"
+  printf "Total balance: ${color_bold}"
+    database_silent "SELECT COALESCE(SUM(Balance), 0.00) FROM account_view;"
+  printf "${color_reset}"
 
 }
 
@@ -285,7 +322,7 @@ function account_main() {
       account_edit "$@"
       ;;
     "help")
-      account_help
+      account_help "$@"
       ;;
     "list")
       shift
