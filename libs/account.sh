@@ -70,16 +70,16 @@ function account_add() {
 }
 
 function account_add_help() {
-  echo "${system_banner} - Account Add"
-  echo
-  echo "Usage: ${system_basename} account add ARGS"
-  echo
-  echo "REQUIRED ARGS:"
-  echo "--name ACCOUNT_NAME"
-  echo "--group ACCOUNT_GROUP"
-  echo "--type $account_type_list"
-  echo "--initial-balance INITIAL_BALANCE"
-  echo
+  printf "${color_bold}${system_banner} - Account Add${color_reset}\n"
+  printf "\n"
+  printf "${color_underline}Usage:${color_reset} ${color_bold}${system_basename} account add${color_reset} ${color_bright_green}ARGS${color_reset}\n"
+  printf "\n"
+  printf "${color_bold}REQUIRED ARGS:${color_reset}\n"
+  printf "  --name ${color_bright_blue}ACCOUNT_NAME${color_reset}\n"
+  printf "  --group ${color_bright_blue}ACCOUNT_GROUP${color_reset}\n"
+  printf "  --type ${color_bright_blue}bank${color_gray}|${color_bright_blue}creditcard${color_gray}|${color_bright_blue}investment${color_gray}|${color_bright_blue}money${color_reset}\n"
+  printf "  --initial-balance ${color_bright_blue}INITIAL_BALANCE${color_reset}\n"
+  printf "\n"
   exit 0
 }
 
