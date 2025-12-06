@@ -61,7 +61,14 @@ function envelope_add() {
   [[ $this_envelope_budget ]] || log_message error "Missing envelope budget."
 
   ## Action
-  database_silent "INSERT INTO envelope (name, egroup, type, budget) VALUES ('$this_envelope_name', '${this_envelope_group}', '${this_envelope_type}', $this_envelope_budget);"
+  database_run "INSERT INTO envelope (name, egroup, type, budget) VALUES ('$this_envelope_name', '${this_envelope_group}', '${this_envelope_type}', $this_envelope_budget);"
+  database_run_rc=$?
+  if [[ $database_run_rc -eq 0 ]]; then
+    log_message info "Added envelope ${color_bold}${this_envelope_group}:${this_envelope_name}${color_reset}"
+  else
+    log_message error "Failed to add envelope (${this_envelope_group}:${this_envelope_name})"
+  fi
+
 
 }
 
