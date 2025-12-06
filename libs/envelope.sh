@@ -66,16 +66,16 @@ function envelope_add() {
 }
 
 function envelope_add_help() {
-  echo "${system_banner} - Envelope Add"
-  echo
-  echo "Usage: ${system_basename} envelope add ARGS"
-  echo
-  echo "REQUIRED ARGS:"
-  echo "--name ENVELOPE_NAME"
-  echo "--group ENVELOPE_GROUP"
-  echo "--type income|expense"
-  echo "--budget MONTHLY_BUDGET"
-  echo
+  printf "${color_bold}${system_banner} - Envelope Add${color_reset}\n"
+  printf "\n"
+  printf "${color_underline}Usage:${color_reset} ${color_bold}${system_basename} envelope add${color_reset} ${color_bright_green}ARGS${color_reset}\n"
+  printf "\n"
+  printf "${color_bold}REQUIRED ARGS:${color_reset}\n"
+  printf "  --name ${color_bright_blue}ENVELOPE_NAME${color_reset}\n"
+  printf "  --group ${color_bright_blue}ENVELOPE_GROUP${color_reset}\n"
+  printf "  --type ${color_bright_blue}income${color_gray}|${color_bright_blue}expense${color_reset}\n"
+  printf "  --budget ${color_bright_blue}MONTHLY_BUDGET${color_reset}\n"
+  printf "\n"
   exit 0
 }
 
@@ -288,17 +288,17 @@ function envelope_edit_help() {
 }
 
 function envelope_help() {
-  echo "${system_banner} - Envelope"
-  echo
-  echo "Usage: ${system_basename} envelope ACTION"
-  echo
-  echo "ACTIONs:"
-  echo " - add"
-  echo " - delete"
-  echo " - edit"
-  echo " - help (this message)"
-  echo " - list"
-  echo
+  printf "${color_bold}${system_banner} - Envelope${color_reset}\n"
+  printf "\n"
+  printf "${color_underline}Usage:${color_reset} ${color_bold}${system_basename} envelope${color_reset} ${color_bright_green}ACTION${color_reset}\n"
+  printf "\n"
+  printf "${color_bold}ACTIONs:${color_reset}\n"
+  printf "  add\n"
+  printf "  delete\n"
+  printf "  edit\n"
+  printf "  help    ${color_gray}(this message)${color_reset}\n"
+  printf "  list\n"
+  printf "\n"
   exit 0
 }
 
