@@ -47,6 +47,28 @@ function validate_date() {
 
 }
 
+function validate_envelope_id() {
+  this_envelope_id="$1"
+
+  # First of all, must be a valid number
+  validate_number "${this_envelope_id}"
+
+  log_message debug "Validating envelope ID"
+
+  # Can't be number 1 (reserved envelope ID)
+  if [[ $this_envelope_id -eq 1 ]]; then
+    log_message error "It is not possible to delete envelope ${color_bold}ID 1${color_reset} ${color_gray}(reserved envelope)${color_reset}"
+  fi
+
+  # Checking if it is an actual envelope ID
+  database_return=$(database_silent "SELECT id FROM envelope WHERE id = ${this_envelope_id}")
+  if [[ "${database_return}" == "${this_envelope_id}" ]]; then
+    log_message debug "Valid envelope ID"
+  else
+    log_message error "Invalid envelope ID ${color_gray}(${this_envelope_id})${color_reset}"
+  fi
+}
+
 function validate_envelope_type() {
   this_envelope_type="$1"
 

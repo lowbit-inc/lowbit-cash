@@ -189,7 +189,7 @@ function envelope_delete() {
         shift
         if [[ "$1" ]]; then
           log_message debug "Got envelope ID: $1"
-          validate_number "$1" && this_envelope_id="$1"
+          validate_envelope_id "$1" && this_envelope_id="$1"
         else
           log_message error "Missing envelope ID."
         fi
@@ -206,7 +206,21 @@ function envelope_delete() {
   [[ $this_envelope_id ]] || log_message error "Missing envelope ID."
 
   ## Action
-  database_silent "DELETE FROM envelope WHERE id = $this_envelope_id;"
+
+  # Getting envelope information
+  log_message debug "Getting envelope name and group from ID"
+  this_envelope_name=$(database_silent "SELECT name FROM envelope WHERE id = ${this_envelope_id};")
+  this_envelope_group=$(database_silent "SELECT egroup FROM envelope WHERE id = ${this_envelope_id};")
+
+  # Deleting envelope
+  log_message user "Are you sure you want to ${color_bold}delete${color_reset} envelope ${color_bold}${this_envelope_group}:${this_envelope_name}${color_reset} (ID ${this_envelope_id})?"
+  database_run "DELETE FROM envelope WHERE id = $this_envelope_id ;"
+  database_run_rc=$?
+  if [[ $database_run_rc -eq 0 ]]; then
+    log_message info "Deleted envelope ${color_bold}${this_envelope_id}${color_reset}"
+  else
+    log_message error "Failed to delete envelope (${this_envelope_id})"
+  fi
 
 }
 
