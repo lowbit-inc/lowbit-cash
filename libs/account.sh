@@ -212,19 +212,9 @@ function account_edit() {
         shift
         if [[ "$1" ]]; then
           log_message debug "Got account ID: $1"
-          validate_number "$1" && this_account_id="$1"
+          validate_account_id "$1" && this_account_id="$1"
         else
           log_message error "Missing account ID."
-        fi
-        ;;
-      "--initial-balance")
-        shift
-        if [[ "$1" ]]; then
-          log_message debug "Got initial balance: $1"
-          validate_money "$1" && this_account_initial_balance="$1"
-          ((this_edit_count++))
-        else
-          log_message error "Missing initial balance."
         fi
         ;;
       "--name")
