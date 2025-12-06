@@ -110,7 +110,7 @@ function account_balance() {
   else
     printf "${color_bright_red}"
   fi
-  printf " ${this_account_balance}${color_reset}\n"
+  printf " ${color_bold}${this_account_balance}${color_reset}\n"
 
 }
 
