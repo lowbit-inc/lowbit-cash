@@ -190,6 +190,7 @@ function account_edit() {
   fi
 
   ## Parsing args
+  this_edit_count=0
   while [[ "$1" ]]; do
     log_message debug "Got arg: $1"
     case "$1" in
@@ -198,13 +199,14 @@ function account_edit() {
         if [[ "$1" ]]; then
           log_message debug "Got account group: $1"
           validate_string "$1" && this_account_group="$1"
+          ((this_edit_count++))
         else
           log_message error "Missing account group."
         fi
         ;;
       "--help")
         log_message debug "Getting help message"
-        account_add_help
+        account_edit_help
         ;;
       "--id")
         shift
@@ -220,6 +222,7 @@ function account_edit() {
         if [[ "$1" ]]; then
           log_message debug "Got initial balance: $1"
           validate_money "$1" && this_account_initial_balance="$1"
+          ((this_edit_count++))
         else
           log_message error "Missing initial balance."
         fi
@@ -229,6 +232,7 @@ function account_edit() {
         if [[ "$1" ]]; then
           log_message debug "Got account name: $1"
           validate_string "$1" && this_account_name="$1"
+          ((this_edit_count++))
         else
           log_message error "Missing account name."
         fi
@@ -238,6 +242,7 @@ function account_edit() {
         if [[ "$1" ]]; then
           log_message debug "Got account type: $1"
           validate_account_type "$1" && this_account_type="$1"
+          ((this_edit_count++))
         else
           log_message error "Missing account type."
         fi
@@ -245,6 +250,10 @@ function account_edit() {
     esac
     shift
   done
+
+  if [[ $this_edit_count -eq 0 ]]; then
+    log_message error "At least one optional arg must be passed"
+  fi
 
   ## Required args
   [[ $this_account_id ]] || log_message error "Missing account ID."
@@ -261,18 +270,18 @@ function account_edit() {
 }
 
 function account_edit_help() {
-  echo "${system_banner} - Account Edit"
-  echo
-  echo "Usage: ${system_basename} account edit ARGS"
-  echo
-  echo "REQUIRED ARGS:"
-  echo "--id ACCOUNT_ID"
-  echo
-  echo "OPTIONAL ARGS:"
-  echo "--name ACCOUNT_NAME"
-  echo "--group ACCOUNT_GROUP"
-  echo "--type $account_type_list"
-  echo
+  printf "${color_bold}${system_banner} - Account Edit${color_reset}\n"
+  printf "\n"
+  printf "${color_underline}Usage:${color_reset} ${color_bold}${system_basename} account edit${color_reset} ${color_bright_green}ARGS${color_reset}\n"
+  printf "\n"
+  printf "${color_bold}REQUIRED ARGS:${color_reset}\n"
+  printf "  --id ${color_bright_blue}ACCOUNT_ID${color_reset}\n"
+  printf "\n"
+  printf "${color_bold}OPTIONAL ARGS:${color_reset}\n"
+  printf "  --name ${color_bright_blue}ACCOUNT_NAME${color_reset}\n"
+  printf "  --group ${color_bright_blue}ACCOUNT_GROUP${color_reset}\n"
+  printf "  --type ${color_bright_blue}bank${color_gray}|${color_bright_blue}creditcard${color_gray}|${color_bright_blue}investment${color_gray}|${color_bright_blue}money${color_reset}\n"
+  printf "\n"
   exit 0
 }
 
