@@ -145,8 +145,14 @@ function account_delete() {
   [[ $this_account_id ]] || log_message error "Missing account ID."
 
   ## Action
+
+  # Getting account information
+  log_message debug "Getting account name and group from ID"
+  this_account_name=$(database_silent "SELECT name FROM account WHERE id = ${this_account_id};")
+  this_account_group=$(database_silent "SELECT agroup FROM account WHERE id = ${this_account_id};")
+
   # Deleting account
-  log_message user "Are you sure you want to ${color_bold}delete${color_reset} account ID ${color_bold}${this_account_id}${color_reset}?"
+  log_message user "Are you sure you want to ${color_bold}delete${color_reset} account ${color_bold}${this_account_group}:${this_account_name}${color_reset} (ID ${this_account_id})?"
   database_run "DELETE FROM account WHERE id = $this_account_id ;"
   database_run_rc=$?
   if [[ $database_run_rc -eq 0 ]]; then
