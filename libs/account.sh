@@ -145,6 +145,7 @@ function account_delete() {
   [[ $this_account_id ]] || log_message error "Missing account ID."
 
   ## Action
+  # Deleting account
   log_message user "Are you sure you want to ${color_bold}delete${color_reset} account ID ${color_bold}${this_account_id}${color_reset}?"
   database_run "DELETE FROM account WHERE id = $this_account_id ;"
   database_run_rc=$?
@@ -154,6 +155,14 @@ function account_delete() {
     log_message error "Failed to delete account (${this_account_id})"
   fi
 
+  # Deleting transactions
+  database_run "DELETE FROM transactions WHERE account_id = $this_account_id ;"
+  database_run_rc=$?
+  if [[ $database_run_rc -eq 0 ]]; then
+    log_message info "Deleted transactions for account ${color_bold}${this_account_id}${color_reset}"
+  else
+    log_message error "Failed to delete account transactions (${this_account_id})"
+  fi
 
 }
 
