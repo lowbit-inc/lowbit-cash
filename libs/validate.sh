@@ -57,7 +57,7 @@ function validate_envelope_id() {
 
   # Can't be number 1 (reserved envelope ID)
   if [[ $this_envelope_id -eq 1 ]]; then
-    log_message error "It is not possible to delete envelope ${color_bold}ID 1${color_reset} ${color_gray}(reserved envelope)${color_reset}"
+    log_message error "It is not possible to delete envelope with ${color_bold}ID 1${color_reset} ${color_gray}(reserved envelope)${color_reset}"
   fi
 
   # Checking if it is an actual envelope ID

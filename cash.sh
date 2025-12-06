@@ -40,7 +40,10 @@ case "$1" in
     system_help
     ;;
   "install")
-    system_install
+    system_mousugu
+    ;;
+  "report")
+    system_mousugu
     ;;
   "transaction")
     shift

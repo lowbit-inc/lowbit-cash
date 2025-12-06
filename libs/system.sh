@@ -30,3 +30,7 @@ function system_install() {
 function system_get_version() {
   echo "${system_banner} - Version: ${system_version}"
 }
+
+function system_mousugu() {
+  log_message warn "${color_bold}${color_magenta}もう直ぐ来ます、よね。${color_reset}"
+}
