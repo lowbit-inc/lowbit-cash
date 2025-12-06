@@ -211,13 +211,13 @@ function envelope_delete() {
 }
 
 function envelope_delete_help() {
-  echo "${system_banner} - Envelope Delete"
-  echo
-  echo "Usage: ${system_basename} envelope delete ARGS"
-  echo
-  echo "REQUIRED ARGS:"
-  echo "--id ENVELOPE_ID"
-  echo
+  printf "${color_bold}${system_banner} - Envelope Delete${color_reset}\n"
+  printf "\n"
+  printf "${color_underline}Usage:${color_reset} ${color_bold}${system_basename} envelope delete${color_reset} ${color_bright_green}ARGS${color_reset}\n"
+  printf "\n"
+  printf "${color_bold}REQUIRED ARGS:${color_reset}\n"
+  printf "  --id ${color_bright_blue}ENVELOPE_ID${color_reset}\n"
+  printf "\n"
   exit 0
 }
 
