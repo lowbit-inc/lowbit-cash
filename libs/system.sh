@@ -32,5 +32,5 @@ function system_get_version() {
 }
 
 function system_mousugu() {
-  log_message warn "${color_bold}${color_magenta}もう直ぐ来ます、よね。${color_reset}"
+  log_message warn "${color_bold}${color_magenta}もうすぐ来ます、よね。${color_reset}"
 }

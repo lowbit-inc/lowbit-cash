@@ -294,17 +294,17 @@ function envelope_edit() {
 }
 
 function envelope_edit_help() {
-  echo "${system_banner} - Envelope Edit"
-  echo
-  echo "Usage: ${system_basename} envelope edit ARGS"
-  echo
-  echo "REQUIRED ARGS:"
-  echo "--id ENVELOPE_ID"
-  echo
-  echo "OPTIONAL ARGS:"
-  echo "--name ENVELOPE_NAME"
-  echo "--budget MONTHLY_BUDGET"
-  echo
+  printf "${color_bold}${system_banner} - Envelope Edit${color_reset}\n"
+  printf "\n"
+  printf "${color_underline}Usage:${color_reset} ${color_bold}${system_basename} envelope edit${color_reset} ${color_bright_green}ARGS${color_reset}\n"
+  printf "\n"
+  printf "${color_bold}REQUIRED ARGS:${color_reset}\n"
+  printf "  --id ${color_bright_blue}ENVELOPE_ID${color_reset}\n"
+  printf "\n"
+  printf "${color_bold}OPTIONAL ARGS:${color_reset}\n"
+  printf "  --name ${color_bright_blue}ENVELOPE_NAME${color_reset}\n"
+  printf "  --budget ${color_bright_blue}MONTHLY_BUDGET${color_reset}\n"
+  printf "\n"
   exit 0
 }
 
