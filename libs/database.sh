@@ -5,9 +5,8 @@ database_path="${database_dir}/${database_file}"
 
 function database_check(){
   if [[ ! -f "${database_path}" ]] ; then
-    log_message info "Database file not found. Initializing..."
+    log_message info "Database file not found. Initializing at ${color_bold}${database_path}${color_reset}..."
     database_init
-    echo
   fi
 }
 

@@ -1,5 +1,22 @@
 #!/bin/bash
 
+function validate_account_id() {
+  this_account_id="$1"
+
+  # First of all, must be a valid number
+  validate_number "${this_account_id}"
+
+  log_message debug "Validating account ID"
+
+  # Checking if it is an actual account ID
+  database_return=$(database_silent "SELECT id FROM account WHERE id = ${this_account_id}")
+  if [[ "${database_return}" == "${this_account_id}" ]]; then
+    log_message debug "Valid account ID"
+  else
+    log_message error "Invalid account ID (${this_account_id})"
+  fi
+}
+
 function validate_account_type() {
   this_account_type="$1"
 
@@ -59,12 +76,15 @@ function validate_money() {
 function validate_number() {
   this_number="$1"
 
+  log_message debug "Validating number"
+
   echo "${this_number}" | grep "^.[[:digit:]]*$" >/dev/null 2>&1
   grep_rc=$?
 
-  if [[ $grep_rc -ne 0 ]]; then
-    echo "Error: invalid number format."
-    exit 1
+  if [[ $grep_rc -eq 0 ]]; then
+    log_message debug "Valid number"
+  else
+    log_message error "Invalid number format"
   fi
 
 }

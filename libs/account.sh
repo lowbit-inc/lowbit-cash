@@ -63,9 +63,26 @@ function account_add() {
   [[ $this_account_initial_balance ]] || log_message error "Missing account initial balance."
 
   ## Action
-  database_silent "INSERT INTO account (name, agroup, type) VALUES ('$this_account_name', '$this_account_group', '$this_account_type');"
+  # Adding the account
+  database_run "INSERT INTO account (name, agroup, type) VALUES ('$this_account_name', '$this_account_group', '$this_account_type');"
+  database_run_rc=$?
+  if [[ $database_run_rc -eq 0 ]]; then
+    log_message info "Added account ${color_bold}${this_account_group}:${this_account_name}${color_reset}"
+  else
+    log_message error "Failed to add account (${this_account_group}:${this_account_name})"
+  fi
+
+  # Getting account ID
   this_account_id=$(database_silent "SELECT id FROM account WHERE name = '${this_account_name}' AND agroup = '${this_account_group}'")
-  database_silent "INSERT INTO transactions (account_id, envelope_id, date, amount, description) VALUES (${this_account_id}, 1, DATE('now', 'localtime'), ${this_account_initial_balance}, 'Opening balance');"
+
+  # Adding opening balance transaction
+  database_run "INSERT INTO transactions (account_id, envelope_id, date, amount, description) VALUES (${this_account_id}, 1, DATE('now', 'localtime'), ${this_account_initial_balance}, 'Opening balance');"
+  database_run_rc=$?
+  if [[ $database_run_rc -eq 0 ]]; then
+    log_message info "Added Opening Balance transaction for account ${color_bold}${this_account_group}:${this_account_name}${color_reset}"
+  else
+    log_message error "Failed to add transaction for account (${this_account_group}:${this_account_name})"
+  fi
 
 }
 
@@ -111,7 +128,7 @@ function account_delete() {
         shift
         if [[ "$1" ]]; then
           log_message debug "Got account ID: $1"
-          validate_number "$1" && this_account_id="$1"
+          validate_account_id "$1" && this_account_id="$1"
         else
           log_message error "Missing account ID."
         fi
@@ -128,18 +145,26 @@ function account_delete() {
   [[ $this_account_id ]] || log_message error "Missing account ID."
 
   ## Action
-  database_silent "DELETE FROM account WHERE id = $this_account_id ;"
+  log_message user "Are you sure you want to ${color_bold}delete${color_reset} account ID ${color_bold}${this_account_id}${color_reset}?"
+  database_run "DELETE FROM account WHERE id = $this_account_id ;"
+  database_run_rc=$?
+  if [[ $database_run_rc -eq 0 ]]; then
+    log_message info "Deleted account ${color_bold}${this_account_id}${color_reset}"
+  else
+    log_message error "Failed to delete account (${this_account_id})"
+  fi
+
 
 }
 
 function account_delete_help() {
-  echo "${system_banner} - Account Delete"
-  echo
-  echo "Usage: ${system_basename} account delete ARGS"
-  echo
-  echo "REQUIRED ARGS:"
-  echo "--id ACCOUNT_ID"
-  echo
+  printf "${color_bold}${system_banner} - Account Delete${color_reset}\n"
+  printf "\n"
+  printf "${color_underline}Usage:${color_reset} ${color_bold}${system_basename} account delete${color_reset} ${color_bright_green}ARGS${color_reset}\n"
+  printf "\n"
+  printf "${color_bold}REQUIRED ARGS:${color_reset}\n"
+  printf "  --id ${color_bright_blue}ACCOUNT_ID${color_reset}\n"
+  printf "\n"
   exit 0
 }
 
