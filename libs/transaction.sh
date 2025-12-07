@@ -515,20 +515,20 @@ function transaction_edit_help() {
 }
 
 function transaction_help() {
-  echo "${system_banner} - Transactions"
-  echo
-  echo "Usage: ${system_basename} transaction ACTION [ARGS]"
-  echo
-  echo "ACTIONS:"
-  echo "- add-account-transfer"
-  echo "- add-envelope-transfer"
-  echo "- add-expense"
-  echo "- add-income"
-  echo "- delete"
-  echo "- edit"
-  echo "- help (this message)"
-  echo "- list"
-  echo
+  printf "${color_bold}${system_banner} - Transactions${color_reset}\n"
+  printf "\n"
+  printf "${color_underline}Usage:${color_reset} ${color_bold}${system_basename} transaction${color_reset} ${color_bright_green}ACTION${color_reset} ${color_gray}[${color_bright_green}ARGS${color_gray}]${color_reset}\n"
+  printf "\n"
+  printf "${color_bold}ACTIONS:${color_reset}\n"
+  printf "  add-account-transfer\n"
+  printf "  add-envelope-transfer\n"
+  printf "  add-expense\n"
+  printf "  add-income\n"
+  printf "  delete\n"
+  printf "  edit\n"
+  printf "  help                    ${color_gray}(this message)${color_reset}\n"
+  printf "  list\n"
+  printf "\n"
   exit 0
 }
 

@@ -289,7 +289,7 @@ function envelope_edit_help() {
 function envelope_help() {
   printf "${color_bold}${system_banner} - Envelope${color_reset}\n"
   printf "\n"
-  printf "${color_underline}Usage:${color_reset} ${color_bold}${system_basename} envelope${color_reset} ${color_bright_green}ACTION${color_reset}\n"
+  printf "${color_underline}Usage:${color_reset} ${color_bold}${system_basename} envelope${color_reset} ${color_bright_green}ACTION${color_reset} ${color_gray}[${color_bright_green}ARGS${color_gray}]${color_reset}\n"
   printf "\n"
   printf "${color_bold}ACTIONs:${color_reset}\n"
   printf "  add\n"

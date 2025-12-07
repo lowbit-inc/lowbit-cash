@@ -295,8 +295,9 @@ function account_help() {
   printf "  add\n"
   printf "  delete\n"
   printf "  edit\n"
-  printf "  help    ${color_gray}(this message)${color_reset}\n"
+  printf "  help        ${color_gray}(this message)${color_reset}\n"
   printf "  list\n"
+  printf "  reconcile\n"
   printf "\n"
   exit 0
 }
