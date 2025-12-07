@@ -77,17 +77,17 @@ function transaction_add_account_transfer() {
 }
 
 function transaction_add_account_transfer_help() {
-  echo "${system_banner} - Transaction Add Account Transfer"
-  echo
-  echo "Usage: ${system_basename} transaction add-account-transfer ARGS"
-  echo
-  echo "REQUIRED ARGS:"
-  echo "--from SOURCE_ACCOUNT_ID"
-  echo "--to TARGET_ACCOUNT_ID"
-  echo "--date DATE"
-  echo "--amount AMOUNT"
-  echo "--description DESCRIPTION"
-  echo
+  printf "${color_bold}${system_banner} - Transaction Add Account Transfer${color_reset}\n"
+  printf "\n"
+  printf "${color_underline}Usage:${color_reset} ${color_bold}${system_basename} transaction add-account-transfer${color_reset} ${color_bright_green}ARGS${color_reset}\n"
+  printf "\n"
+  printf "${color_bold}REQUIRED ARGS:${color_reset}\n"
+  printf "  --from ${color_bright_blue}SOURCE_ACCOUNT_ID${color_reset}\n"
+  printf "  --to ${color_bright_blue}TARGET_ACCOUNT_ID${color_reset}\n"
+  printf "  --date ${color_bright_blue}DATE${color_reset}\n"
+  printf "  --amount ${color_bright_blue}AMOUNT${color_reset}\n"
+  printf "  --description ${color_bright_blue}DESCRIPTION${color_reset}\n"
+  printf "\n"
   exit 0
 }
 
