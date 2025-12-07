@@ -86,95 +86,6 @@ function envelope_add_help() {
   exit 0
 }
 
-function envelope_edit() {
-
-  unset $this_update_query
-
-  if [[ $1 ]]; then
-    validate_number "$1" && this_account_id="$1"
-    shift
-  else
-    echo "Error: missing account ID."
-    exit 1
-  fi
-
-  # Parsing args
-  while [[ "$1" ]]; do
-
-    case "$1" in
-      "--name")
-        shift
-        if [[ "$1" ]]; then
-          validate_string "$1" && this_account_name="$1"
-        else
-          echo "Error: missing new account name."
-          exit 1
-        fi
-
-        if [[ $this_update_query ]]; then
-          this_update_query+=" , "
-        fi
-
-        this_update_query+="name = '$this_account_name'"
-
-        ;;
-      "--group")
-        shift
-        if [[ "$1" ]]; then
-          validate_string "$1" && this_account_group="$1"
-        else
-          echo "Error: missing new account group."
-          exit 1
-        fi
-
-        if [[ $this_update_query ]]; then
-          this_update_query+=" , "
-        fi
-
-        this_update_query+="agroup = '$this_account_group'"
-
-        ;;
-      "--type")
-        shift
-        if [[ "$1" ]]; then
-          validate_account_type "$1" && this_account_type="$1"
-        else
-          echo "Error: missing new account type."
-          exit 1
-        fi
-
-        if [[ $this_update_query ]]; then
-          this_update_query+=" , "
-        fi
-
-        this_update_query+="type = '$this_account_type'"
-
-        ;;
-      "--initial-balance")
-        shift
-        if [[ "$1" ]]; then
-          validate_money "$1" && this_account_initial_balance="$1"
-        else
-          echo "Error: missing new account initial balance."
-          exit 1
-        fi
-
-        if [[ $this_update_query ]]; then
-          this_update_query+=" , "
-        fi
-
-        this_update_query+="initial_balance = '$this_account_initial_balance'"
-
-        ;;
-    esac
-
-    shift
-  done
-
-  database_silent "UPDATE account set $this_update_query WHERE id = $this_account_id"
-
-}
-
 function envelope_delete() {
 
   if [[ ! "$1" ]]; then
@@ -206,6 +117,11 @@ function envelope_delete() {
   [[ $this_envelope_id ]] || log_message error "Missing envelope ID."
 
   ## Action
+
+  # Can't delete envelope ID 1 (reserved envelope)
+  if [[ $this_envelope_id -eq 1 ]]; then
+    log_message error "It is not possible to delete envelope with ${color_bold}ID 1${color_reset} ${color_gray}(reserved envelope)${color_reset}"
+  fi
 
   # Getting envelope information
   log_message debug "Getting envelope name and group from ID"
@@ -242,6 +158,7 @@ function envelope_edit() {
   fi
 
   ## Parsing args
+  this_edit_count=0
   while [[ "$1" ]]; do
     log_message debug "Got arg: $1"
     case "$1" in
@@ -250,19 +167,30 @@ function envelope_edit() {
         if [[ "$1" ]]; then
           log_message debug "Got envelope budget: $1"
           validate_money "$1" && this_envelope_budget="$1"
+          ((this_edit_count++))
         else
-          log_message error "Missing envelope budget."
+          log_message error "Missing envelope budget"
+        fi
+        ;;
+      "--group")
+        shift
+        if [[ "$1" ]]; then
+          log_message debug "Got envelope group: $1"
+          validate_string "$1" && this_envelope_group="$1"
+          ((this_edit_count++))
+        else
+          log_message error "Missing envelope group"
         fi
         ;;
       "--help")
         log_message debug "Getting help message"
-        envelope_add_help
+        envelope_edit_help
         ;;
       "--id")
         shift
         if [[ "$1" ]]; then
           log_message debug "Got envelope ID: $1"
-          validate_number "$1" && this_envelope_id="$1"
+          validate_envelope_id "$1" && this_envelope_id="$1"
         else
           log_message error "Missing envelope ID."
         fi
@@ -272,8 +200,19 @@ function envelope_edit() {
         if [[ "$1" ]]; then
           log_message debug "Got envelope name: $1"
           validate_string "$1" && this_envelope_name="$1"
+          ((this_edit_count++))
         else
           log_message error "Missing envelope name."
+        fi
+        ;;
+      "--type")
+        shift
+        if [[ "$1" ]]; then
+          log_message debug "Got envelope type: $1"
+          validate_envelope_type "$1" && this_envelope_type="$1"
+          ((this_edit_count++))
+        else
+          log_message error "Missing envelope type."
         fi
         ;;
     esac
@@ -284,13 +223,37 @@ function envelope_edit() {
   [[ $this_envelope_id ]] || log_message error "Missing envelope ID."
 
   ## Optional args
-  [[ $this_envelope_budget ]] && this_update_query+="budget = '$this_envelope_budget',"
+  [[ $this_envelope_budget ]] && this_update_query+="budget = $this_envelope_budget,"
+  [[ $this_envelope_group ]]  && this_update_query+="egroup = '$this_envelope_group',"
   [[ $this_envelope_name ]]   && this_update_query+="name = '$this_envelope_name',"
+  [[ $this_envelope_type ]]   && this_update_query+="type = '$this_envelope_type',"
+
+  # Can't edit envelope ID 1 (reserved envelope)
+  if [[ $this_envelope_id -eq 1 ]]; then
+    log_message error "It is not possible to edit envelope with ${color_bold}ID 1${color_reset} ${color_gray}(reserved envelope)${color_reset}"
+  fi
+
+  # Checking if something needs to be changed
+  if [[ $this_edit_count -eq 0 ]]; then
+    log_message error "At least one optional arg must be passed"
+  fi
 
   ## Action
+
   this_update_query=${this_update_query%?}
   log_message debug "Update query: $this_update_query"
-  database_silent "UPDATE envelope set $this_update_query WHERE id = $this_envelope_id"
+  database_run "UPDATE envelope set $this_update_query WHERE id = $this_envelope_id"
+  if [[ $database_run_rc -eq 0 ]]; then
+    # Getting envelope information
+    log_message debug "Getting envelope name and group from ID"
+    this_envelope_name=$(database_silent "SELECT name FROM envelope WHERE id = ${this_envelope_id};")
+    this_envelope_group=$(database_silent "SELECT egroup FROM envelope WHERE id = ${this_envelope_id};")
+    log_message info "Edited envelope ${color_bold}${this_envelope_group}:${this_envelope_name}${color_reset}"
+  else
+    log_message error "Failed to edit envelope (${this_envelope_group}:${this_envelope_name})"
+  fi
+
+
 }
 
 function envelope_edit_help() {
@@ -303,6 +266,8 @@ function envelope_edit_help() {
   printf "\n"
   printf "${color_bold}OPTIONAL ARGS:${color_reset}\n"
   printf "  --name ${color_bright_blue}ENVELOPE_NAME${color_reset}\n"
+  printf "  --group ${color_bright_blue}ENVELOPE_GROUP${color_reset}\n"
+  printf "  --type ${color_bright_blue}income${color_gray}|${color_bright_blue}expense${color_reset}\n"
   printf "  --budget ${color_bright_blue}MONTHLY_BUDGET${color_reset}\n"
   printf "\n"
   exit 0
@@ -342,16 +307,22 @@ function envelope_list() {
 
   ## Action
   database_run "SELECT * FROM envelope_view;"
+  this_envelope_balance=$(database_silent "SELECT COALESCE(SUM(Balance), 0.00) FROM envelope_view;")
+  this_budget_income=$(database_silent "SELECT COALESCE(SUM(Budget), 0.00) FROM envelope_view WHERE Type = 'income';")
+  this_budget_expense=$(database_silent "SELECT COALESCE(SUM(Budget), 0.00) FROM envelope_view WHERE Type = 'expense';")
+  this_budget_difference=$(database_silent "SELECT (SELECT COALESCE(SUM(Budget), 0.00) FROM envelope_view WHERE Type = 'income') - (SELECT COALESCE(SUM(Budget), 0.00) FROM envelope_view WHERE Type = 'expense');")
 
-  printf "Total balance:     ${color_bold}"
-    database_silent "SELECT COALESCE(SUM(Balance), 0.00) FROM envelope_view"
-    printf "${color_reset}\n"
-  printf "Budget - Income:   ${color_bold}"
-    database_silent "SELECT COALESCE(SUM(Budget), 0.00) FROM envelope_view WHERE Type = 'income';"
-    printf "${color_reset}"
-  printf "Budget - Expense:  ${color_bold}"
-    database_silent "SELECT COALESCE(SUM(Budget), 0.00) FROM envelope_view WHERE Type = 'expense';"
-    printf "${color_reset}"
+  printf "Total balance:"
+  if [[ "${this_envelope_balance:0:1}" != "-" ]]; then
+    printf "${color_bright_green}"
+  else
+    printf "${color_bright_red}"
+  fi
+  printf "    ${color_bold}${this_envelope_balance}${color_reset}\n"
+  printf "\n"
+  printf "Budgeted Income:  ${color_bright_green}${this_budget_income}${color_reset}\n"
+  printf "Budgeted Expense: ${color_bright_red}${this_budget_expense}${color_reset}\n"
+  printf "Difference:       ${this_budget_difference}\n"
 }
 
 function envelope_list_help() {

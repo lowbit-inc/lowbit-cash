@@ -23,6 +23,10 @@ source ./libs/transaction.sh
 # Script #
 ##########
 
+if [[ ! $1 ]]; then
+  system_help
+fi
+
 case "$1" in
   "account")
     shift
@@ -53,6 +57,7 @@ case "$1" in
     system_get_version
     ;;
   *)
+    log_message warn "Unknown command. Getting help message..."
     system_help
     ;;
 esac

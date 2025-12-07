@@ -41,8 +41,8 @@ CREATE TABLE transactions (
 CREATE VIEW account_view AS
 SELECT
   account.id as 'ID',
-  account.name AS 'Name',
   account.agroup AS 'Group',
+  account.name AS 'Name',
   account.type AS 'Type',
   COALESCE(SUM(transactions.amount), 0.00) AS 'Balance'
 FROM
@@ -59,8 +59,8 @@ ORDER BY
 CREATE VIEW envelope_view AS
 SELECT
   envelope.id AS 'ID',
-  envelope.name AS 'Name',
   envelope.egroup AS 'Group',
+  envelope.name AS 'Name',
   envelope.type AS 'Type',
   envelope.budget AS 'Budget',
   COALESCE(SUM(transactions.amount), 0.00) AS 'Balance'
@@ -76,10 +76,10 @@ ORDER BY
 CREATE VIEW transactions_view AS
 SELECT
   transactions.id AS 'ID',
-  account.name AS 'Account Name',
   account.agroup AS 'Account Group',
-  envelope.name AS 'Envelope Name',
+  account.name AS 'Account Name',
   envelope.egroup AS 'Envelope Group',
+  envelope.name AS 'Envelope Name',
   transactions.date AS 'Date',
   transactions.amount AS 'Amount',
   transactions.description AS 'Description'

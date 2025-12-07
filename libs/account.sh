@@ -249,14 +249,25 @@ function account_edit() {
   [[ $this_account_id ]] || log_message error "Missing account ID."
 
   ## Optional args
-  [[ $this_account_group ]]           && this_update_query+="agroup = '$this_account_group',"
-  [[ $this_account_name ]]            && this_update_query+="name = '$this_account_name',"
-  [[ $this_account_type ]]            && this_update_query+="type = '$this_account_type',"
+  [[ $this_account_group ]] && this_update_query+="agroup = '$this_account_group',"
+  [[ $this_account_name ]]  && this_update_query+="name = '$this_account_name',"
+  [[ $this_account_type ]]  && this_update_query+="type = '$this_account_type',"
 
   ## Action
+
   this_update_query=${this_update_query%?}
   log_message debug "Update query: $this_update_query"
-  database_silent "UPDATE account set $this_update_query WHERE id = $this_account_id"
+  database_run "UPDATE account set $this_update_query WHERE id = $this_account_id"
+  if [[ $database_run_rc -eq 0 ]]; then
+    # Getting account information
+    log_message debug "Getting account name and group from ID"
+    this_account_name=$(database_silent "SELECT name FROM account WHERE id = ${this_account_id};")
+    this_account_group=$(database_silent "SELECT agroup FROM account WHERE id = ${this_account_id};")
+    log_message info "Edited account ${color_bold}${this_account_group}:${this_account_name}${color_reset}"
+  else
+    log_message error "Failed to edit account (${this_account_group}:${this_account_name})"
+  fi
+
 }
 
 function account_edit_help() {
