@@ -11,6 +11,7 @@ function system_help() {
   printf "${color_bold}MAIN COMMANDS:${color_reset}\n"
   printf "  account\n"
   printf "  balance\n"
+  printf "  budget\n"
   printf "  envelope\n"
   printf "  transaction\n"
   printf "  report\n"

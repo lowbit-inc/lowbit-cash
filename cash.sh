@@ -36,6 +36,9 @@ case "$1" in
     shift
     account_balance "$@"
     ;;
+  "budget")
+    envelope_budget
+    ;;
   "envelope")
     shift
     envelope_main "$@"

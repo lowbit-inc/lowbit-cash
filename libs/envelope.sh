@@ -78,12 +78,25 @@ function envelope_add_help() {
   printf "${color_underline}Usage:${color_reset} ${color_bold}${system_basename} envelope add${color_reset} ${color_bright_green}ARGS${color_reset}\n"
   printf "\n"
   printf "${color_bold}REQUIRED ARGS:${color_reset}\n"
-  printf "  --name ${color_bright_blue}ENVELOPE_NAME${color_reset}\n"
   printf "  --group ${color_bright_blue}ENVELOPE_GROUP${color_reset}\n"
+  printf "  --name ${color_bright_blue}ENVELOPE_NAME${color_reset}\n"
   printf "  --type ${color_bright_blue}income${color_gray}|${color_bright_blue}expense${color_reset}\n"
   printf "  --budget ${color_bright_blue}MONTHLY_BUDGET${color_reset}\n"
   printf "\n"
   exit 0
+}
+
+function envelope_budget() {
+
+  # Getting information
+  this_budget_income=$(database_silent "SELECT COALESCE(SUM(Budget), 0.00) FROM envelope_view WHERE Type = 'income';")
+  this_budget_expense=$(database_silent "SELECT COALESCE(SUM(Budget), 0.00) FROM envelope_view WHERE Type = 'expense';")
+  this_budget_difference=$(database_silent "SELECT (SELECT COALESCE(SUM(Budget), 0.00) FROM envelope_view WHERE Type = 'income') - (SELECT COALESCE(SUM(Budget), 0.00) FROM envelope_view WHERE Type = 'expense');")
+
+  # Printing information
+  printf "Budgeted Income:  ${color_bright_green}${this_budget_income}${color_reset}\n"
+  printf "Budgeted Expense: ${color_bright_red}${this_budget_expense}${color_reset}\n"
+  printf "Difference:       ${this_budget_difference}\n"
 }
 
 function envelope_delete() {
@@ -265,8 +278,8 @@ function envelope_edit_help() {
   printf "  --id ${color_bright_blue}ENVELOPE_ID${color_reset}\n"
   printf "\n"
   printf "${color_bold}OPTIONAL ARGS:${color_reset}\n"
-  printf "  --name ${color_bright_blue}ENVELOPE_NAME${color_reset}\n"
   printf "  --group ${color_bright_blue}ENVELOPE_GROUP${color_reset}\n"
+  printf "  --name ${color_bright_blue}ENVELOPE_NAME${color_reset}\n"
   printf "  --type ${color_bright_blue}income${color_gray}|${color_bright_blue}expense${color_reset}\n"
   printf "  --budget ${color_bright_blue}MONTHLY_BUDGET${color_reset}\n"
   printf "\n"
@@ -308,9 +321,7 @@ function envelope_list() {
   ## Action
   database_run "SELECT * FROM envelope_view;"
   this_envelope_balance=$(database_silent "SELECT COALESCE(SUM(Balance), 0.00) FROM envelope_view;")
-  this_budget_income=$(database_silent "SELECT COALESCE(SUM(Budget), 0.00) FROM envelope_view WHERE Type = 'income';")
-  this_budget_expense=$(database_silent "SELECT COALESCE(SUM(Budget), 0.00) FROM envelope_view WHERE Type = 'expense';")
-  this_budget_difference=$(database_silent "SELECT (SELECT COALESCE(SUM(Budget), 0.00) FROM envelope_view WHERE Type = 'income') - (SELECT COALESCE(SUM(Budget), 0.00) FROM envelope_view WHERE Type = 'expense');")
+  this_envelope_unallocated=$(database_silent "SELECT COALESCE(SUM(Balance), 0.00) FROM envelope_view WHERE id = 1;")
 
   printf "Total balance:"
   if [[ "${this_envelope_balance:0:1}" != "-" ]]; then
@@ -319,10 +330,9 @@ function envelope_list() {
     printf "${color_bright_red}"
   fi
   printf "    ${color_bold}${this_envelope_balance}${color_reset}\n"
+  printf "Unallocated:      ${this_envelope_unallocated}\n"
   printf "\n"
-  printf "Budgeted Income:  ${color_bright_green}${this_budget_income}${color_reset}\n"
-  printf "Budgeted Expense: ${color_bright_red}${this_budget_expense}${color_reset}\n"
-  printf "Difference:       ${this_budget_difference}\n"
+  envelope_budget
 }
 
 function envelope_list_help() {
