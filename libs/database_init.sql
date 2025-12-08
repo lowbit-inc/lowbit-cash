@@ -24,7 +24,7 @@ CREATE TABLE envelope (
   UNIQUE (name, egroup)
 );
 
-INSERT INTO envelope (id, name, egroup, type) VALUES (1, 'Unallocated', '--', '--');
+INSERT INTO envelope (id, name, egroup, type) VALUES (1, 'Unallocated', 'Reserved', '--');
 
 CREATE TABLE transactions (
   id INTEGER PRIMARY KEY AUTOINCREMENT,

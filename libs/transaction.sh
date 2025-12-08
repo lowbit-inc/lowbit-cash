@@ -149,23 +149,23 @@ function transaction_add_envelope_transfer() {
       "--from")
         shift
         if [[ "$1" ]]; then
-          log_message debug "Got source envelope ID: $1"
-          validate_number "$1" && this_transaction_from="$1"
+          log_message debug "Got source envelope 'Group:Name': $1"
+          validate_envelope_group_name "${1}" && this_source_envelope_group_name="$1"
         else
-          log_message error "Missing source envelope ID."
+          log_message error "Missing source envelope"
         fi
         ;;
       "--help")
         log_message debug "Getting help message"
-        transaction_add_account_transfer_help
+        transaction_add_envelope_transfer_help
         ;;
       "--to")
         shift
         if [[ "$1" ]]; then
-          log_message debug "Got target envelope ID: $1"
-          validate_number "$1" && this_transaction_to="$1"
+          log_message debug "Got target envelope 'Group:Name': $1"
+          validate_envelope_group_name "${1}" && this_target_envelope_group_name="$1"
         else
-          log_message error "Missing target envelope ID."
+          log_message error "Missing target envelope"
         fi
         ;;
     esac
@@ -173,30 +173,48 @@ function transaction_add_envelope_transfer() {
   done
 
   ## Required args
-  [[ $this_transaction_amount ]]      || log_message error "Missing transaction amount."
-  [[ $this_transaction_date ]]        || log_message error "Missing transaction date."
-  [[ $this_transaction_description ]] || log_message error "Missing transaction description."
-  [[ $this_transaction_from ]]        || log_message error "Missing source envelope ID."
-  [[ $this_transaction_to ]]          || log_message error "Missing target envelope ID."
+  [[ $this_source_envelope_group_name ]]  || log_message error "Missing source envelope ID."
+  [[ $this_target_envelope_group_name ]]  || log_message error "Missing target envelope ID."
+  [[ $this_transaction_amount ]]          || log_message error "Missing transaction amount."
+  [[ $this_transaction_date ]]            || log_message error "Missing transaction date."
+  [[ $this_transaction_description ]]     || log_message error "Missing envelope description."
 
   ## Action
-  database_silent "INSERT INTO transactions (envelope_id, amount, date, description) VALUES ($this_transaction_from, -$this_transaction_amount, '$this_transaction_date', '$this_transaction_description');"
-  database_silent "INSERT INTO transactions (envelope_id, amount, date, description) VALUES ($this_transaction_to, $this_transaction_amount, '$this_transaction_date', '$this_transaction_description');"
+
+  # Getting envelope IDs
+  this_source_envelope_id=$(envelope_get_id_from_group_name "${this_source_envelope_group_name}")
+  this_target_envelope_id=$(envelope_get_id_from_group_name "${this_target_envelope_group_name}")
+
+  database_run "INSERT INTO transactions (envelope_id, amount, date, description) VALUES ($this_source_envelope_id, -$this_transaction_amount, '$this_transaction_date', '$this_transaction_description');"
+  database_run_rc=$?
+  if [[ $database_run_rc -eq 0 ]]; then
+    log_message info "Added transaction for ${color_bold}${this_source_envelope_group_name}${color_reset}"
+  else
+    log_message error "Failed to add transaction for envelope ${this_source_envelope_group_name}"
+  fi
+
+  database_run "INSERT INTO transactions (envelope_id, amount, date, description) VALUES ($this_target_envelope_id, $this_transaction_amount, '$this_transaction_date', '$this_transaction_description');"
+  database_run_rc=$?
+  if [[ $database_run_rc -eq 0 ]]; then
+    log_message info "Added transaction for ${color_bold}${this_target_envelope_group_name}${color_reset}"
+  else
+    log_message error "Failed to add transaction for envelope ${this_target_envelope_group_name}"
+  fi
 
 }
 
 function transaction_add_envelope_transfer_help() {
-  echo "${system_banner} - Transaction Add Envelope Transfer"
-  echo
-  echo "Usage: ${system_basename} transaction add-envelope-transfer ARGS"
-  echo
-  echo "REQUIRED ARGS:"
-  echo "--from SOURCE_ENVELOPE_ID"
-  echo "--to TARGET_ENVELOPE_ID"
-  echo "--date DATE"
-  echo "--amount AMOUNT"
-  echo "--description DESCRIPTION"
-  echo
+  printf "${color_bold}${system_banner} - Transaction Add Envelope Transfer${color_reset}\n"
+  printf "\n"
+  printf "${color_underline}Usage:${color_reset} ${color_bold}${system_basename} transaction add-envelope-transfer${color_reset} ${color_bright_green}ARGS${color_reset}\n"
+  printf "\n"
+  printf "${color_bold}REQUIRED ARGS:${color_reset}\n"
+  printf "  --from ${color_bright_blue}ENVELOPE_GROUP:ENVELOPE_NAME${color_reset}\n"
+  printf "  --to ${color_bright_blue}ENVELOPE_GROUP:ENVELOPE_NAME${color_reset}\n"
+  printf "  --date ${color_bright_blue}DATE${color_reset}\n"
+  printf "  --amount ${color_bright_blue}AMOUNT${color_reset}\n"
+  printf "  --description ${color_bright_blue}DESCRIPTION${color_reset}\n"
+  printf "\n"
   exit 0
 }
 
