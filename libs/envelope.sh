@@ -286,6 +286,20 @@ function envelope_edit_help() {
   exit 0
 }
 
+function envelope_get_id_from_group_name() {
+
+  # Getting arg
+  this_envelope_group_name="${1}"
+
+  # Breaking down the variable
+  this_envelope_group=$(echo $this_envelope_group_name  | cut -d: -f1)
+  this_envelope_name=$(echo $this_envelope_group_name   | cut -d: -f2)
+
+  # Getting envelope ID
+  database_silent "SELECT id FROM envelope WHERE egroup = '${this_envelope_group}' AND name = '${this_envelope_name}';"
+
+}
+
 function envelope_help() {
   printf "${color_bold}${system_banner} - Envelope${color_reset}\n"
   printf "\n"
