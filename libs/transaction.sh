@@ -40,10 +40,10 @@ function transaction_add_account_transfer() {
       "--from")
         shift
         if [[ "$1" ]]; then
-          log_message debug "Got source account ID: $1"
-          validate_number "$1" && this_transaction_from="$1"
+          log_message debug "Got source account 'Group:Name': $1"
+          validate_account_group_name "${1}" && this_source_account_group_name="$1"
         else
-          log_message error "Missing source account ID."
+          log_message error "Missing source account"
         fi
         ;;
       "--help")
@@ -53,10 +53,10 @@ function transaction_add_account_transfer() {
       "--to")
         shift
         if [[ "$1" ]]; then
-          log_message debug "Got target account ID: $1"
-          validate_number "$1" && this_transaction_to="$1"
+          log_message debug "Got target account 'Group:Name': $1"
+          validate_account_group_name "${1}" && this_target_account_group_name="$1"
         else
-          log_message error "Missing target account ID."
+          log_message error "Missing target account"
         fi
         ;;
     esac
@@ -64,15 +64,33 @@ function transaction_add_account_transfer() {
   done
 
   ## Required args
-  [[ $this_transaction_amount ]]      || log_message error "Missing transaction amount."
-  [[ $this_transaction_date ]]        || log_message error "Missing transaction date."
-  [[ $this_transaction_description ]] || log_message error "Missing account description."
-  [[ $this_transaction_from ]]        || log_message error "Missing source account ID."
-  [[ $this_transaction_to ]]          || log_message error "Missing target account ID."
+  [[ $this_source_account_group_name ]] || log_message error "Missing source account ID."
+  [[ $this_target_account_group_name ]] || log_message error "Missing target account ID."
+  [[ $this_transaction_amount ]]        || log_message error "Missing transaction amount."
+  [[ $this_transaction_date ]]          || log_message error "Missing transaction date."
+  [[ $this_transaction_description ]]   || log_message error "Missing account description."
 
   ## Action
-  database_silent "INSERT INTO transactions (account_id, amount, date, description) VALUES ($this_transaction_from, -$this_transaction_amount, '$this_transaction_date', '$this_transaction_description');"
-  database_silent "INSERT INTO transactions (account_id, amount, date, description) VALUES ($this_transaction_to, $this_transaction_amount, '$this_transaction_date', '$this_transaction_description');"
+
+  # Getting account IDs
+  this_source_account_id=$(account_get_id_from_group_name "${this_source_account_group_name}")
+  this_target_account_id=$(account_get_id_from_group_name "${this_target_account_group_name}")
+
+  database_run "INSERT INTO transactions (account_id, amount, date, description) VALUES ($this_source_account_id, -$this_transaction_amount, '$this_transaction_date', '$this_transaction_description');"
+  database_run_rc=$?
+  if [[ $database_run_rc -eq 0 ]]; then
+    log_message info "Added transaction for ${color_bold}${this_source_account_group_name}${color_reset}"
+  else
+    log_message error "Failed to add transaction for account ${this_source_account_group_name}"
+  fi
+
+  database_run "INSERT INTO transactions (account_id, amount, date, description) VALUES ($this_target_account_id, $this_transaction_amount, '$this_transaction_date', '$this_transaction_description');"
+  database_run_rc=$?
+  if [[ $database_run_rc -eq 0 ]]; then
+    log_message info "Added transaction for ${color_bold}${this_target_account_group_name}${color_reset}"
+  else
+    log_message error "Failed to add transaction for account ${this_target_account_group_name}"
+  fi
 
 }
 
@@ -82,8 +100,8 @@ function transaction_add_account_transfer_help() {
   printf "${color_underline}Usage:${color_reset} ${color_bold}${system_basename} transaction add-account-transfer${color_reset} ${color_bright_green}ARGS${color_reset}\n"
   printf "\n"
   printf "${color_bold}REQUIRED ARGS:${color_reset}\n"
-  printf "  --from ${color_bright_blue}SOURCE_ACCOUNT_ID${color_reset}\n"
-  printf "  --to ${color_bright_blue}TARGET_ACCOUNT_ID${color_reset}\n"
+  printf "  --from ${color_bright_blue}ACCOUNT_GROUP:ACCOUNT_NAME${color_reset}\n"
+  printf "  --to ${color_bright_blue}ACCOUNT_GROUP:ACCOUNT_NAME${color_reset}\n"
   printf "  --date ${color_bright_blue}DATE${color_reset}\n"
   printf "  --amount ${color_bright_blue}AMOUNT${color_reset}\n"
   printf "  --description ${color_bright_blue}DESCRIPTION${color_reset}\n"

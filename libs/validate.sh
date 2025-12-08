@@ -17,6 +17,34 @@ function validate_account_id() {
   fi
 }
 
+function validate_account_group_name() {
+
+  # Getting arg
+  if [[ $1 ]]; then
+    this_account_group_name="$1"
+  else
+    log_message error "Missing required arg for internal function validate_account_group_name"
+  fi
+
+  log_message debug "Validating Account Group Name"
+
+  # Validating string format
+  if [[ ! $(echo $this_account_group_name | grep ':') ]]; then
+    log_message error "Invalid account reference - Expected format is ACCOUNT_GROUP:ACCOUNT_NAME"
+  fi
+
+  # Validating account Group and Name
+  this_account_group=$(echo $this_account_group_name  | cut -d: -f1)
+  this_account_name=$(echo $this_account_group_name   | cut -d: -f2)
+  this_account_id=$(database_silent "SELECT id FROM account WHERE agroup = '${this_account_group}' AND name = '${this_account_name}';")
+  if [[ -n ${this_account_id} ]]; then
+    log_message debug "Valid Account Group Name"
+  else
+    log_message error "Account not found (${this_account_group_name})"
+  fi
+
+}
+
 function validate_account_type() {
   this_account_type="$1"
 

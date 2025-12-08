@@ -286,6 +286,20 @@ function account_edit_help() {
   exit 0
 }
 
+function account_get_id_from_group_name() {
+
+  # Getting arg
+  this_account_group_name="${1}"
+
+  # Breaking down the variable
+  this_account_group=$(echo $this_account_group_name  | cut -d: -f1)
+  this_account_name=$(echo $this_account_group_name   | cut -d: -f2)
+
+  # Getting account ID
+  database_silent "SELECT id FROM account WHERE agroup = '${this_account_group}' AND name = '${this_account_name}';"
+
+}
+
 function account_help() {
   printf "${color_bold}${system_banner} - Account\n${color_reset}"
   printf "\n"
