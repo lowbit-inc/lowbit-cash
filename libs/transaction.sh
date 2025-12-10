@@ -486,6 +486,7 @@ function transaction_edit() {
   fi
 
   ## Parsing args
+  this_edit_count=0
   while [[ "$1" ]]; do
     log_message debug "Got arg: $1"
     case "$1" in
@@ -494,6 +495,7 @@ function transaction_edit() {
         if [[ "$1" ]]; then
           log_message debug "Got account ID: $1"
           validate_number "$1" && this_transaction_account_id="$1"
+          ((this_edit_count++))
         else
           log_message error "Missing account ID."
         fi
@@ -503,6 +505,7 @@ function transaction_edit() {
         if [[ "$1" ]]; then
           log_message debug "Got transaction amount: $1"
           validate_money "$1" && this_transaction_amount="$1"
+          ((this_edit_count++))
         else
           log_message error "Missing transaction amount."
         fi
@@ -512,6 +515,7 @@ function transaction_edit() {
         if [[ "$1" ]]; then
           log_message debug "Got transaction date: $1"
           validate_date "$1" && this_transaction_date="$1"
+          ((this_edit_count++))
         else
           log_message error "Missing transaction date."
         fi
@@ -521,6 +525,7 @@ function transaction_edit() {
         if [[ "$1" ]]; then
           log_message debug "Got transaction description: $1"
           validate_string "$1" && this_transaction_description="$1"
+          ((this_edit_count++))
         else
           log_message error "Missing transaction description."
         fi
@@ -530,6 +535,7 @@ function transaction_edit() {
         if [[ "$1" ]]; then
           log_message debug "Got transaction envelope: $1"
           validate_number "$1" && this_transaction_envelope_id="$1"
+          ((this_edit_count++))
         else
           log_message error "Missing transaction envelope ID."
         fi
@@ -551,6 +557,10 @@ function transaction_edit() {
     shift
   done
 
+  if [[ $this_edit_count -eq 0 ]]; then
+    log_message error "At least one optional arg must be passed"
+  fi
+
   ## Required args
   [[ $this_transaction_id ]] || log_message error "Missing transaction ID."
 
@@ -564,24 +574,33 @@ function transaction_edit() {
   ## Action
   this_update_query=${this_update_query%?}
   log_message debug "Update query: $this_update_query"
-  database_silent "UPDATE transactions set $this_update_query WHERE id = $this_transaction_id"
+  database_run "UPDATE transactions set $this_update_query WHERE id = $this_transaction_id"
+  if [[ $database_run_rc -eq 0 ]]; then
+    # Getting transaction information
+    log_message debug "Getting transaction description from ID"
+    this_transaction_description=$(database_silent "SELECT description FROM transactions WHERE id = ${this_transaction_id};")
+    log_message info "Edited transaction with description ${color_bold}${this_transaction_description}${color_reset} (ID ${this_transaction_id})"
+  else
+    log_message error "Failed to edit transaction with description ${this_transaction_description} (ID ${this_transaction_id})"
+  fi
+
 }
 
 function transaction_edit_help() {
-  echo "${system_banner} - Transaction Edit"
-  echo
-  echo "Usage: ${system_basename} transaction edit ARGS"
-  echo
-  echo "REQUIRED ARGS:"
-  echo "--id TRANSACTION_ID"
-  echo
-  echo "OPTIONAL ARGS:"
-  echo "--account ACCOUNT_ID"
-  echo "--amount AMOUNT"
-  echo "--date DATE"
-  echo "--description DESCRIPTION"
-  echo "--envelope ENVELOPE_ID"
-  echo
+  printf "${color_bold}${system_banner} - Transaction Edit${color_reset}\n"
+  printf "\n"
+  printf "${color_underline}Usage: ${system_basename} transaction edit${color_reset} ${color_bright_green}ARGS${color_reset}\n"
+  printf "\n"
+  printf "${color_bold}REQUIRED ARGS:${color_reset}\n"
+  printf "  --id ${color_bright_blue}TRANSACTION_ID${color_reset}\n"
+  printf "\n"
+  printf "${color_bold}OPTIONAL ARGS:${color_reset}\n"
+  printf "  --account ${color_bright_blue}ACCOUNT_ID${color_reset}\n"
+  printf "  --amount ${color_bright_blue}AMOUNT${color_reset}\n"
+  printf "  --date ${color_bright_blue}DATE${color_reset}\n"
+  printf "  --description ${color_bright_blue}DESCRIPTION${color_reset}\n"
+  printf "  --envelope ${color_bright_blue}ENVELOPE_ID${color_reset}\n"
+  printf "\n"
   exit 0
 }
 
