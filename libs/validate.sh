@@ -174,3 +174,20 @@ function validate_string() {
   log_message debug "Validating string"
   log_message debug "(Validation stil not implemented - skipping)"  
 }
+
+function validate_transaction_id() {
+  this_transaction_id="$1"
+
+  # First of all, must be a valid number
+  validate_number "${this_transaction_id}"
+
+  log_message debug "Validating transaction ID"
+
+  # Checking if it is an actual transaction ID
+  database_return=$(database_silent "SELECT id FROM transactions WHERE id = ${this_transaction_id}")
+  if [[ "${database_return}" == "${this_transaction_id}" ]]; then
+    log_message debug "Valid transaction ID"
+  else
+    log_message error "Invalid transaction ID ${color_gray}(${this_transaction_id})${color_reset}"
+  fi
+}

@@ -231,10 +231,10 @@ function transaction_add_expense() {
       "--account")
         shift
         if [[ "$1" ]]; then
-          log_message debug "Got account ID: $1"
-          validate_number "$1" && this_transaction_account_id="$1"
+          log_message debug "Got transaction account: $1"
+          validate_account_group_name "${1}" && this_transaction_account_group_name="$1"
         else
-          log_message error "Missing account ID."
+          log_message error "Missing transaction account"
         fi
         ;;
       "--amount")
@@ -267,44 +267,55 @@ function transaction_add_expense() {
       "--envelope")
         shift
         if [[ "$1" ]]; then
-          log_message debug "Got envelope ID: $1"
-          validate_number "$1" && this_transaction_envelope_id="$1"
+          log_message debug "Got transaction envelope: $1"
+          validate_envelope_group_name "${1}" && this_transaction_envelope_group_name="$1"
         else
-          log_message error "Missing envelope ID."
+          log_message error "Missing transaction envelope"
         fi
         ;;
       "--help")
         log_message debug "Getting help message"
-        transaction_add_expense_help
+        transaction_add_envelope_transfer_help
         ;;
     esac
     shift
   done
 
   ## Required args
-  [[ $this_transaction_account_id ]]  || log_message error "Missing account ID."
-  [[ $this_transaction_amount ]]      || log_message error "Missing transaction amount."
-  [[ $this_transaction_date ]]        || log_message error "Missing transaction date."
-  [[ $this_transaction_description ]] || log_message error "Missing transaction description."
-  [[ $this_transaction_envelope_id ]] || log_message error "Missing envelope ID."
+  [[ $this_transaction_account_group_name ]]  || log_message error "Missing transaction account"
+  [[ $this_transaction_amount ]]              || log_message error "Missing transaction amount"
+  [[ $this_transaction_date ]]                || log_message error "Missing transaction date"
+  [[ $this_transaction_description ]]         || log_message error "Missing transaction description"
+  [[ $this_transaction_envelope_group_name ]] || log_message error "Missing transaction envelope"
 
   ## Action
-  database_silent "INSERT INTO transactions (account_id, envelope_id, amount, date, description) VALUES ($this_transaction_account_id, $this_transaction_envelope_id, -$this_transaction_amount, '$this_transaction_date', '$this_transaction_description');"
+
+  # Getting account and envelope IDs
+  this_transaction_account_id=$(account_get_id_from_group_name "${this_transaction_account_group_name}")
+  this_transaction_envelope_id=$(envelope_get_id_from_group_name "${this_transaction_envelope_group_name}")
+
+  database_run "INSERT INTO transactions (account_id, envelope_id, amount, date, description) VALUES ($this_transaction_account_id, $this_transaction_envelope_id, -$this_transaction_amount, '$this_transaction_date', '$this_transaction_description');"
+  database_run_rc=$?
+  if [[ $database_run_rc -eq 0 ]]; then
+    log_message info "Added expense transaction for ${color_bold}${this_transaction_account_group_name}${color_reset}"
+  else
+    log_message error "Failed to add expense transaction for envelope ${this_transaction_account_group_name}"
+  fi
 
 }
 
 function transaction_add_expense_help() {
-  echo "${system_banner} - Transaction Add Expense"
-  echo
-  echo "Usage: ${system_basename} transaction add-expense ARGS"
-  echo
-  echo "REQUIRED ARGS:"
-  echo "--account ACCOUNT_ID"
-  echo "--envelope ENVELOPE_ID"
-  echo "--date DATE"
-  echo "--amount AMOUNT"
-  echo "--description DESCRIPTION"
-  echo
+  printf "${color_bold}${system_banner} - Transaction Add Expense${color_reset}\n"
+  printf "\n"
+  printf "${color_underline}Usage:${color_reset} ${color_bold}${system_basename} transaction add-expense${color_reset} ${color_bright_green}ARGS${color_reset}\n"
+  printf "\n"
+  printf "${color_bold}REQUIRED ARGS:${color_reset}\n"
+  printf "  --account ${color_bright_blue}ACCOUNT_GROUP:ACCOUNT_NAME${color_reset}\n"
+  printf "  --envelope ${color_bright_blue}ENVELOPE_GROUP:ENVELOPE_NAME${color_reset}\n"
+  printf "  --date ${color_bright_blue}DATE${color_reset}\n"
+  printf "  --amount ${color_bright_blue}AMOUNT${color_reset}\n"
+  printf "  --description ${color_bright_blue}DESCRIPTION${color_reset}\n"
+  printf "\n"
   exit 0
 }
 
@@ -321,10 +332,10 @@ function transaction_add_income() {
       "--account")
         shift
         if [[ "$1" ]]; then
-          log_message debug "Got account ID: $1"
-          validate_number "$1" && this_transaction_account_id="$1"
+          log_message debug "Got transaction account: $1"
+          validate_account_group_name "${1}" && this_transaction_account_group_name="$1"
         else
-          log_message error "Missing account ID."
+          log_message error "Missing transaction account"
         fi
         ;;
       "--amount")
@@ -357,44 +368,55 @@ function transaction_add_income() {
       "--envelope")
         shift
         if [[ "$1" ]]; then
-          log_message debug "Got envelope ID: $1"
-          validate_number "$1" && this_transaction_envelope_id="$1"
+          log_message debug "Got transaction envelope: $1"
+          validate_envelope_group_name "${1}" && this_transaction_envelope_group_name="$1"
         else
-          log_message error "Missing envelope ID."
+          log_message error "Missing transaction envelope"
         fi
         ;;
       "--help")
         log_message debug "Getting help message"
-        transaction_add_income_help
+        transaction_add_envelope_transfer_help
         ;;
     esac
     shift
   done
 
   ## Required args
-  [[ $this_transaction_account_id ]]  || log_message error "Missing account ID."
-  [[ $this_transaction_envelope_id ]] || log_message error "Missing envelope ID."
-  [[ $this_transaction_amount ]]      || log_message error "Missing transaction amount."
-  [[ $this_transaction_date ]]        || log_message error "Missing transaction date."
-  [[ $this_transaction_description ]] || log_message error "Missing account description."
+  [[ $this_transaction_account_group_name ]]  || log_message error "Missing transaction account"
+  [[ $this_transaction_amount ]]              || log_message error "Missing transaction amount"
+  [[ $this_transaction_date ]]                || log_message error "Missing transaction date"
+  [[ $this_transaction_description ]]         || log_message error "Missing transaction description"
+  [[ $this_transaction_envelope_group_name ]] || log_message error "Missing transaction envelope"
 
   ## Action
-  database_silent "INSERT INTO transactions (account_id, envelope_id, amount, date, description) VALUES ($this_transaction_account_id, $this_transaction_envelope_id, $this_transaction_amount, '$this_transaction_date', '$this_transaction_description');"
+
+  # Getting account and envelope IDs
+  this_transaction_account_id=$(account_get_id_from_group_name "${this_transaction_account_group_name}")
+  this_transaction_envelope_id=$(envelope_get_id_from_group_name "${this_transaction_envelope_group_name}")
+
+  database_run "INSERT INTO transactions (account_id, envelope_id, amount, date, description) VALUES ($this_transaction_account_id, $this_transaction_envelope_id, $this_transaction_amount, '$this_transaction_date', '$this_transaction_description');"
+  database_run_rc=$?
+  if [[ $database_run_rc -eq 0 ]]; then
+    log_message info "Added income transaction for ${color_bold}${this_transaction_account_group_name}${color_reset}"
+  else
+    log_message error "Failed to add income transaction for envelope ${this_transaction_account_group_name}"
+  fi
 
 }
 
 function transaction_add_income_help() {
-  echo "${system_banner} - Transaction Add Income"
-  echo
-  echo "Usage: ${system_basename} transaction add-income ARGS"
-  echo
-  echo "REQUIRED ARGS:"
-  echo "--account ACCOUNT_ID"
-  echo "--envelope ENVELOPE_ID"
-  echo "--date DATE"
-  echo "--amount AMOUNT"
-  echo "--description DESCRIPTION"
-  echo
+  printf "${color_bold}${system_banner} - Transaction Add Income${color_reset}\n"
+  printf "\n"
+  printf "${color_underline}Usage:${color_reset} ${color_bold}${system_basename} transaction add-income${color_reset} ${color_bright_green}ARGS${color_reset}\n"
+  printf "\n"
+  printf "${color_bold}REQUIRED ARGS:${color_reset}\n"
+  printf "  --account ${color_bright_blue}ACCOUNT_GROUP:ACCOUNT_NAME${color_reset}\n"
+  printf "  --envelope ${color_bright_blue}ENVELOPE_GROUP:ENVELOPE_NAME${color_reset}\n"
+  printf "  --date ${color_bright_blue}DATE${color_reset}\n"
+  printf "  --amount ${color_bright_blue}AMOUNT${color_reset}\n"
+  printf "  --description ${color_bright_blue}DESCRIPTION${color_reset}\n"
+  printf "\n"
   exit 0
 }
 
@@ -412,9 +434,9 @@ function transaction_delete() {
         shift
         if [[ "$1" ]]; then
           log_message debug "Got transaction ID: $1"
-          validate_number "$1" && this_transaction_id="$1"
+          validate_transaction_id "$1" && this_transaction_id="$1"
         else
-          log_message error "Missing transaction ID."
+          log_message error "Missing transaction ID"
         fi
         ;;
       "--help")
@@ -426,21 +448,34 @@ function transaction_delete() {
   done
 
   ## Required args
-  [[ $this_transaction_id ]] || log_message error "Missing transaction ID."
+  [[ $this_transaction_id ]] || log_message error "Missing transaction ID"
 
   ## Action
-  database_silent "DELETE FROM transactions WHERE id = $this_transaction_id ;"
+
+  # Getting transaction information
+  log_message debug "Getting transaction description from ID"
+  this_transaction_description=$(database_silent "SELECT description FROM transactions WHERE id = ${this_transaction_id};")
+
+  # Deleting transaction
+  log_message user "Are you sure you want to ${color_bold}delete${color_reset} transaction with description ${color_bold}${this_transaction_description}${color_reset} (ID ${this_transaction_id})?"
+  database_run "DELETE FROM transactions WHERE id = $this_transaction_id ;"
+  database_run_rc=$?
+  if [[ $database_run_rc -eq 0 ]]; then
+    log_message info "Deleted transaction ${color_bold}${this_transaction_id}${color_reset}"
+  else
+    log_message error "Failed to delete transaction (${this_transaction_id})"
+  fi
 
 }
 
 function transaction_delete_help() {
-  echo "${system_banner} - Transaction Delete"
-  echo
-  echo "Usage: ${system_basename} transaction delete ARGS"
-  echo
-  echo "REQUIRED ARGS:"
-  echo "--id TRANSACTION_ID"
-  echo
+  printf "${color_bold}${system_banner} - Transaction Delete${color_reset}\n"
+  printf "\n"
+  printf "${color_underline}Usage:${color_reset} ${color_bold}${system_basename} transaction delete${color_reset} ${color_bright_green}ARGS${color_reset}\n"
+  printf "\n"
+  printf "${color_bold}REQUIRED ARGS:${color_reset}\n"
+  printf "  --id ${color_bright_blue}TRANSACTION_ID${color_reset}\n"
+  printf "\n"
   exit 0
 }
 
@@ -591,13 +626,13 @@ function transaction_list() {
 }
 
 function transaction_list_help() {
-  echo "${system_banner} - Transaction List"
-  echo
-  echo "Usage: ${system_basename} transaction list [ARGS]"
-  echo
-  echo "OPTIONAL ARGS:"
-  echo "(soon)"
-  echo
+  printf "${color_bold}${system_banner} - Transaction List${color_reset}\n"
+  printf "\n"
+  printf "${color_underline}Usage:${color_reset} ${color_bold}${system_basename} transaction list${color_reset} ${color_gray}[${color_bright_green}ARGS${color_gray}]${color_reset}\n"
+  printf "\n"
+  printf "${color_bold}OPTIONAL ARGS:${color_reset}\n"
+  printf "  ${color_gray}(soon)${color_reset}\n"
+  printf "\n"
   exit 0
 }
 
