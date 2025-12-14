@@ -180,7 +180,7 @@ function transaction_add_envelope_transfer() {
   [[ $this_target_envelope_group_name ]]  || log_message error "Missing target envelope ID."
   [[ $this_transaction_amount ]]          || log_message error "Missing transaction amount."
   [[ $this_transaction_date ]]            || log_message error "Missing transaction date."
-  [[ $this_transaction_description ]]     || log_message error "Missing envelope description."
+  [[ $this_transaction_description ]]     || log_message error "Missing transaction description."
 
   ## Action
 

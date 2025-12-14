@@ -355,9 +355,11 @@ function account_reconcile_help() {
   printf "\n"
   printf "${color_underline}Usage:${color_reset} ${color_bold}${system_basename} account reconcile${color_reset} ${color_bright_green}ARGS${color_reset}\n"
   printf "\n"
+  printf "Starts a reconciliation process for an account.\n"
+  printf "\n"
   printf "${color_bold}REQUIRED ARGS:${color_reset}\n"
   printf "  --account ${color_bright_blue}ACCOUNT_GROUP:ACCOUNT_NAME${color_reset}\n"
-  printf "  --balance ${color_bright_blue}CURRENT_BALANCE${color_reset}\n"
+  printf "  --balance ${color_bright_blue}CURRENT_BALANCE${color_reset} ${color_gray}(real balance observed)${color_reset}\n"
   printf "\n"
   exit 0
 }
