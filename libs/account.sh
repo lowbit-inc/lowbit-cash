@@ -350,6 +350,138 @@ function account_list_help() {
   exit 0
 }
 
+function account_reconcile_help() {
+  printf "${color_bold}${system_banner} - Account Reconcile${color_reset}\n"
+  printf "\n"
+  printf "${color_underline}Usage:${color_reset} ${color_bold}${system_basename} account reconcile${color_reset} ${color_bright_green}ARGS${color_reset}\n"
+  printf "\n"
+  printf "${color_bold}REQUIRED ARGS:${color_reset}\n"
+  printf "  --account ${color_bright_blue}ACCOUNT_GROUP:ACCOUNT_NAME${color_reset}\n"
+  printf "  --balance ${color_bright_blue}CURRENT_BALANCE${color_reset}\n"
+  printf "\n"
+  exit 0
+}
+
+function account_reconcile_check() {
+
+  if [[ "$1" ]]; then
+    validate_account_id "$1" && this_account_id="$1"
+  else
+    log_message error "Missing account ID for reconciliation check"
+  fi
+
+  # Getting account information
+  log_message debug "Getting account name and group from ID"
+  this_account_name=$(database_silent "SELECT name FROM account WHERE id = ${this_account_id};")
+  this_account_group=$(database_silent "SELECT agroup FROM account WHERE id = ${this_account_id};")
+
+  # Starting
+  log_message debug "Starting reconciliation check for account ${this_account_group}:${this_account_name} (ID ${this_account_id})"
+
+  # Need to reconcile?
+  this_reconcile_status=$(database_silent "SELECT reconciled FROM account WHERE id = ${this_account_id};")
+  if [[ $this_reconcile_status -eq 1 ]]; then
+    log_message debug "Account ${this_account_group}:${this_account_name} already reconciled - Skipping..."
+    return 0
+  else
+    log_message debug "Reconciliation is pending for ${this_account_group}:${this_account_name} - Continuing..."
+  fi
+
+  # Getting reconcile difference
+  this_reconcile_difference=$(database_silent "SELECT \"Reconciled Balance\" - \"Balance\" FROM account_view WHERE ID = ${this_account_id};")
+
+  if [[ "${this_reconcile_difference}" == "0.0" ]]; then
+    log_message info "Account ${color_bold}${this_account_group}:${this_account_name}${color_reset} has a difference of ${color_bold}0.00${color_reset} and is ready to reconcile"
+    account_reconcile_close "${this_account_id}"
+  else
+    log_message warn "Reconciliation: account ${color_bold}${this_account_group}:${this_account_name}${color_reset} has a difference of ${color_bold}${this_reconcile_difference}${color_reset} to reconcile."
+  fi
+}
+
+function account_reconcile_close() {
+
+  if [[ "$1" ]]; then
+    validate_account_id "$1" && this_account_id="$1"
+  else
+    log_message error "Missing account ID for reconciliation close"
+  fi
+
+  # Getting account information
+  log_message debug "Getting account name and group from ID"
+  this_account_name=$(database_silent "SELECT name FROM account WHERE id = ${this_account_id};")
+  this_account_group=$(database_silent "SELECT agroup FROM account WHERE id = ${this_account_id};")
+
+  # Closing
+  log_message user "Account ${color_bold}${this_account_group}:${this_account_name}${color_reset} will reconcile"
+
+  database_run "UPDATE account SET reconciled = TRUE, reconciled_date = DATE('now', 'localtime') WHERE id = ${this_account_id};"
+  if [[ $database_run_rc -eq 0 ]]; then
+    log_message info "Reconciled account ${color_bold}${this_account_group}:${this_account_name}${color_reset}"
+  else
+    log_message error "Failed to reconcile account (${this_account_group}:${this_account_name})"
+  fi
+
+}
+
+function account_reconcile_start() {
+
+  if [[ ! "$1" ]]; then
+    account_reconcile_help
+  fi
+
+  ## Parsing args
+  while [[ "$1" ]]; do
+    log_message debug "Got arg: $1"
+    case "$1" in
+      "--account")
+        shift
+        if [[ "$1" ]]; then
+          log_message debug "Got account: $1"
+          validate_account_group_name "$1" && this_account_group_name="$1"
+        else
+          log_message error "Missing account"
+        fi
+        ;;
+      "--balance")
+        shift
+        if [[ "$1" ]]; then
+          log_message debug "Got current balance: $1"
+          validate_money "$1" && this_account_current_balance="$1"
+        else
+          log_message error "Missing current balance"
+        fi
+        ;;
+      "--help")
+        log_message debug "Getting help message"
+        account_reconcile_help
+        ;;
+    esac
+    shift
+  done
+
+  ## Required args
+  [[ $this_account_group_name ]]       || log_message error "Missing account"
+  [[ $this_account_current_balance ]] || log_message error "Missing current balance"
+
+  ## Action
+
+  # Getting account ID
+  this_account_id=$(account_get_id_from_group_name "${this_account_group_name}")
+
+  # Starting reconciliation
+  log_message info "Starting reconciliation for account ${color_bold}${this_account_group_name}${color_reset}"
+  database_run "UPDATE account SET reconciled = FALSE, reconciled_date = NULL, reconciled_balance = $this_account_current_balance WHERE id = ${this_account_id};"
+  database_run_rc=$?
+  if [[ $database_run_rc -eq 0 ]]; then
+    log_message info "Marked account ${color_bold}${this_account_group}:${this_account_name}${color_reset} for reconciliation (target balance: ${color_bold}${this_account_current_balance}${color_reset})"
+  else
+    log_message error "Failed to mark account for reconciliation (${this_account_group}:${this_account_name})"
+  fi
+
+  account_reconcile_check "${this_account_id}"
+
+}
+
 function account_main() {
   case $1 in
     "add")
@@ -370,6 +502,10 @@ function account_main() {
     "list")
       shift
       account_list "$@"
+      ;;
+    "reconcile")
+      shift
+      account_reconcile_start "$@"
       ;;
     *)
       account_help

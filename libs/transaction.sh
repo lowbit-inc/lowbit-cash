@@ -92,6 +92,9 @@ function transaction_add_account_transfer() {
     log_message error "Failed to add transaction for account ${this_target_account_group_name}"
   fi
 
+  account_reconcile_check "${this_source_account_id}"
+  account_reconcile_check "${this_target_account_id}"
+
 }
 
 function transaction_add_account_transfer_help() {
@@ -302,6 +305,8 @@ function transaction_add_expense() {
     log_message error "Failed to add expense transaction for envelope ${this_transaction_account_group_name}"
   fi
 
+  account_reconcile_check "${this_transaction_account_id}"
+
 }
 
 function transaction_add_expense_help() {
@@ -402,6 +407,8 @@ function transaction_add_income() {
   else
     log_message error "Failed to add income transaction for envelope ${this_transaction_account_group_name}"
   fi
+
+  account_reconcile_check "${this_transaction_account_id}"
 
 }
 

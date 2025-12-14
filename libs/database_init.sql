@@ -12,6 +12,9 @@ CREATE TABLE account (
   name TEXT NOT NULL,
   agroup TEXT NOT NULL,
   type TEXT NOT NULL,
+  reconciled INTEGER,
+  reconciled_balance REAL,
+  reconciled_date TEXT,
   UNIQUE (name, agroup)
 );
 
@@ -44,7 +47,10 @@ SELECT
   account.agroup AS 'Group',
   account.name AS 'Name',
   account.type AS 'Type',
-  COALESCE(SUM(transactions.amount), 0.00) AS 'Balance'
+  COALESCE(SUM(transactions.amount), 0.00) AS 'Balance',
+  iif(account.reconciled, 'True', 'False') AS 'Reconciled?',
+  account.reconciled_date AS 'Reconciled Date',
+  account.reconciled_balance AS 'Reconciled Balance'
 FROM
   account
 LEFT JOIN
