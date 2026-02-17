@@ -29,7 +29,7 @@ function account_add() {
         shift
         if [[ "$1" ]]; then
           log_message debug "Got initial balance: $1"
-          validate_money "$1" && this_account_initial_balance="$1"
+          validate_money "$1" && this_account_initial_balance="${1//.}"
         else
           log_message error "Missing initial balance."
         fi
@@ -61,6 +61,9 @@ function account_add() {
   [[ $this_account_group ]]           || log_message error "Missing account group."
   [[ $this_account_type ]]            || log_message error "Missing account type."
   [[ $this_account_initial_balance ]] || log_message error "Missing account initial balance."
+
+  # Converting money to integer
+
 
   ## Action
   # Adding the account
