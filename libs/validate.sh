@@ -62,6 +62,23 @@ function validate_account_type() {
   fi
 }
 
+function validate_binary() {
+
+  this_binary="$1"
+  
+  log_message debug "Validating binary '$this_binary':"
+  
+  which $this_binary >/dev/null 2>&1
+  which_rc=$?
+
+  if [[ $which_rc -eq 0 ]]; then
+    log_message debug "Binary found"
+  else
+    log_message error "Dependency error - binary '$this_binary' not found"
+  fi
+  
+}
+
 function validate_date() {
   this_date="$1"
 

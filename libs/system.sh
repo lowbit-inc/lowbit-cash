@@ -3,6 +3,12 @@ system_banner="Lowbit Cash"
 system_basename="$(basename $0)"
 system_version="0.2.0"
 
+function system_check_dependencies() {
+  
+  validate_binary sqlite3
+  
+}
+
 function system_help() {
   printf "${color_bold}${system_banner} - Help${color_reset}\n"
   printf "\n"

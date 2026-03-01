@@ -23,6 +23,9 @@ source ./libs/transaction.sh
 # Script #
 ##########
 
+# Checking dependencies
+system_check_dependencies
+
 if [[ ! $1 ]]; then
   system_help
 fi
